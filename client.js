@@ -1,10 +1,21 @@
 const editor = document.getElementById("editor");
 const id = location.pathname.slice(1);
 
+// ensure that the value of the textarea is not kept upon reloads.
+// Maybe not required
+if(editor.value) editor.value=''
+
+const editHistory=[]
+function historyLog(data){
+  console.info(data)
+  editHistory.push(data)
+}
+
 function crash(e) {
   console.error(e);
   alert((e && e.message) || "Unknown error");
 }
+
 window.onerror = (message, source, lineno, colno, error) => {
   console.error("window.onerror", {
     message,
@@ -71,17 +82,26 @@ async function setText(parsed, key) {
 
 function setDecodedText(decoded){
 
-  updateTitle(decoded);
 
-  if (editor.value != decoded) {
-    const sel = [editor.selectionStart, editor.selectionEnd];
+  if(decoded==lastSetText && lastSetText==editor.value) return
 
-    const merged = merge(lastSetText, decoded, editor.value, sel);
-    editor.value = merged;
-    editor.selectionStart = sel[0];
-    editor.selectionEnd = sel[1];
-  }
 
+  const sel = [editor.selectionStart, editor.selectionEnd];
+  const merged = merge(lastSetText, decoded, editor.value, sel);
+  editor.value = merged;
+  editor.selectionStart = sel[0];
+  editor.selectionEnd = sel[1];
+
+  historyLog({
+    type:'setDecodedText',
+    old:lastSetText,
+    remote:decoded,
+    local:editor.value,
+    result:merged
+  })
+
+
+  updateTitle(editor.value);
   lastSetText = decoded;
 }
 
@@ -98,32 +118,13 @@ getKey()
       setText(startText, key);
     }else{
       // new doc
-      setDecodedText(defaultText)
+      setDecodedText(defaultText, ()=>null)
 
     }
 
     socket.addEventListener("open", function (event) {
       send({ action: "join-room", id });
       setConnected(true);
-
-      socket.addEventListener("close", function () {
-        setConnected(false);
-      });
-      socket.addEventListener("message", function (event) {
-        try {
-          const parsed = JSON.parse(event.data);
-          switch (parsed.action) {
-            case "text-saved":
-              setSaving(false);
-              break;
-            case "set-text":
-              setText(parsed, key);
-              break;
-          }
-        } catch (e) {
-          crash(e);
-        }
-      });
 
       const debouncedKeyUp = debounce(async () => {
         try {
@@ -146,14 +147,41 @@ getKey()
             iv: bufferToS(iv),
             id,
           });
+
+          historyLog({
+            type:'sent-set-text',
+            decoded
+          })
+
         } catch (e) {
           crash(e);
         }
       });
 
-      editor.addEventListener("keyup", (e) => {
+
+      socket.addEventListener("close", function () {
+        setConnected(false);
+      });
+      socket.addEventListener("message", function (event) {
+        try {
+          const parsed = JSON.parse(event.data);
+          switch (parsed.action) {
+            case "text-saved":
+              setSaving(false);
+
+              break;
+            case "set-text":
+              setText(parsed, key);
+              break;
+          }
+        } catch (e) {
+          crash(e);
+        }
+      });
+
+      editor.addEventListener("keyup",()=>{
         setSaving(true);
-        debouncedKeyUp(e);
+        debouncedKeyUp();
       });
     });
   })
@@ -175,6 +203,8 @@ function bufferToS(buffer) {
 function sToBuffer(base64_string) {
   return Uint8Array.from(atob(base64_string), (c) => c.charCodeAt(0)).buffer;
 }
+
+
 
 function merge(old, remote, local, selections = [], offsetL = 0) {
   const shift = (cb) =>
@@ -290,12 +320,21 @@ function diffLength(a, b, c, name) {
 const savingIndicator = document.getElementById("saving-indicator");
 function setSaving(saving) {
   savingIndicator.style.display = saving ? "block" : "none";
+
+  historyLog({
+    type:'set-saving-'+saving
+  })
+
 }
 setSaving(false);
 
 const disconnected = document.getElementById("disconnected");
 
 function setConnected(connected) {
+  historyLog({
+    type:'set-connected-'+connected
+  })
+
   disconnected.style.display = !connected ? "block" : "none";
   if (connected) {
 
@@ -322,7 +361,7 @@ Share the link to a friend, and they'll be able to edit the text, like a really 
 
 You could use it to keep a shared shopping list with your roommates, or to organize a picnic with friends.
 
-Your changes are encrypted on your device, then we forward the encrypted version to the other people editing. You can check the code (it's short and sweet) on Github : https://github.com/renanlecaro/picnic
+Your changes are encrypted on your device, then we forward the encrypted version to the other people editing. You can check the code (it's short and sweet) on GitHub : https://github.com/renanlecaro/picnic
 
 `
 
@@ -417,3 +456,6 @@ expect(
   "i like TRUCKS"
 );
 expect("del/del", merge(old, "like big cars", "i like big"), "like big");
+
+expect("del/null", merge(old, "", old), "");
+expect("del/null", merge(old, "big cars", old), "big cars");
