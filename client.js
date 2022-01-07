@@ -63,22 +63,26 @@ async function setText(parsed, key) {
     );
 
     const decoded = new TextDecoder().decode(decryptedButBinary);
-
-    updateTitle(decoded);
-
-    if (editor.value != decoded) {
-      const sel = [editor.selectionStart, editor.selectionEnd];
-
-      const merged = merge(lastSetText, decoded, editor.value, sel);
-      editor.value = merged;
-      editor.selectionStart = sel[0];
-      editor.selectionEnd = sel[1];
-    }
-
-    lastSetText = decoded;
+    setDecodedText(decoded)
   } catch (e) {
     crash(e);
   }
+}
+
+function setDecodedText(decoded){
+
+  updateTitle(decoded);
+
+  if (editor.value != decoded) {
+    const sel = [editor.selectionStart, editor.selectionEnd];
+
+    const merged = merge(lastSetText, decoded, editor.value, sel);
+    editor.value = merged;
+    editor.selectionStart = sel[0];
+    editor.selectionEnd = sel[1];
+  }
+
+  lastSetText = decoded;
 }
 
 getKey()
@@ -92,6 +96,10 @@ getKey()
 
     if (startText) {
       setText(startText, key);
+    }else{
+      // new doc
+      setDecodedText(defaultText)
+
     }
 
     socket.addEventListener("open", function (event) {
@@ -286,11 +294,15 @@ function setSaving(saving) {
 setSaving(false);
 
 const disconnected = document.getElementById("disconnected");
+
 function setConnected(connected) {
   disconnected.style.display = !connected ? "block" : "none";
   if (connected) {
+
     editor.removeAttribute("disabled");
   } else {
+
+
     editor.setAttribute("disabled", true);
 
     setTimeout(
@@ -299,6 +311,20 @@ function setConnected(connected) {
     );
   }
 }
+
+const defaultText=`Picnic: privacy first collaborative text editor.
+
+This plain text document is editable, go ahead, try it.
+
+It's been generated just for you, and the only way to read/write is to access the exact url you are on.
+
+Share the link to a friend, and they'll be able to edit the text, like a really minimal Google Docs.
+
+You could use it to keep a shared shopping list with your roommates, or to organize a picnic with friends.
+
+Your changes are encrypted on your device, then we forward the encrypted version to the other people editing. You can check the code (it's short and sweet) on Github : https://github.com/renanlecaro/picnic
+
+`
 
 // below is only unit tests
 
