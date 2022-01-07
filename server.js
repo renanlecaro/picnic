@@ -1,33 +1,35 @@
-const express = require("express");
 const crypto = require("crypto");
 const { WebSocketServer } = require("ws");
-
-const app = express();
-const port = 4444;
-
+const http = require("http");
 const fs = require("fs");
 
-const clientHTML = fs.readFileSync("./client.html").toString()
+const clientHTML = fs.readFileSync("./client.html").toString();
 
 const clientJS = fs.readFileSync("./client.js").toString();
 
-app.get("/", (req, res) => {
-  console.log("redirecting");
-  res.redirect("/" + randomId());
-});
-app.get("/:id", async (req, res) => {
-  const startText = JSON.stringify(await getText(req.params.id));
-  res.setHeader("Content-Type", "text/html");
-  res.end(clientHTML
-    .replace('{{clientJS}}', `
+const server = http.createServer(async (req, res) => {
+
+  if (req.url === "/") {
+    res.writeHead(302, {
+      Location: "/" + randomId(),
+    });
+    return res.end();
+  }
+
+  const id = req.url.slice(1);
+  const startText = JSON.stringify(await getText(id));
+  res.writeHead(200, { "Content-Type": "text/html" });
+  res.end(
+    clientHTML.replace(
+      "CLIENT_JS_INSERTED_HERE",
+      `
     var startText=${startText}
     ${clientJS}
-    `))
+    `
+    )
+  );
 });
 
-const server = app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-});
 
 function randomId() {
   return crypto.randomBytes(8).toString("hex");
@@ -80,3 +82,5 @@ wss.on("connection", function connection(ws) {
     }
   });
 });
+
+server.listen(process.env.PORT || 4444);

@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.2",
-    "ws": "^8.4.0",
+    "ws": "^8.4.0"
+  },
+  "devDependencies": {
     "nodemon": "^2.0.15"
   }
-
 }
