@@ -21,7 +21,7 @@ const server = http.createServer(async (req, res) => {
   res.writeHead(200, { "Content-Type": "text/html" });
   res.end(
     clientHTML.replace(
-      "CLIENT_JS_INSERTED_HERE",
+      "'CLIENT_JS_INSERTED_HERE'",
       `
     var startText=${startText}
     ${clientJS}

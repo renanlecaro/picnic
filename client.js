@@ -2,6 +2,13 @@ const editor = document.getElementById("editor");
 const id = location.pathname.slice(1);
 
 
+function crash(e) {
+  console.error(e);
+  alert(e && e.message || "Unknown error");
+}
+window.onerror=(message, source, lineno, colno, error)=>crash(error)
+
+
 async function getKey() {
   if (location.hash) {
     const key = await crypto.subtle.importKey(
@@ -61,7 +68,7 @@ async function setText(parsed, key) {
 
       const sel=[editor.selectionStart, editor.selectionEnd]
 
-      const merged= merge(lastSetText||decoded, decoded, editor.value, sel)
+      const merged= merge(lastSetText, decoded, editor.value, sel)
       editor.value=merged
       editor.selectionStart=sel[0]
       editor.selectionEnd=sel[1]
@@ -104,10 +111,10 @@ getKey()
         }
       });
 
-      const debouncedKeyUp = debounce(async (e) => {
+      const debouncedKeyUp = debounce(async () => {
         try {
-          const decoded = e.target.value;
-          console.log('Saving ',decoded)
+          const decoded = editor.value;
+          if(lastSetText===decoded) return
           updateTitle(decoded);
           lastSetText=decoded;
           const iv = await window.crypto.getRandomValues(new Uint8Array(12));
@@ -142,15 +149,11 @@ function debounce(func, timeout = 300){
   let timer;
   return (...args) => {
     clearTimeout(timer);
-    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    timer = setTimeout(() =>  func.apply(this, args), timeout);
   };
 }
 
 
-function crash(e) {
-  console.error(e);
-  alert(e.message || "Unknown error");
-}
 
 function bufferToS(buffer) {
   return btoa(String.fromCharCode.apply(null, new Uint8Array(buffer)));
@@ -192,42 +195,119 @@ function merge(old, remote, local, selections = [], offsetL = 0) {
     );
   }
 
-  const rmR = diffLength(old, remote, local);
-  const rmL = diffLength(old, local, remote);
-  const addR = diffLength(remote, old);
-  const addL = diffLength(local, old);
 
-  const min = min1(rmR, rmL, addR, addL);
+  const scored=[
+    diffLength(old, remote, local, 'rmR'),
+    diffLength(old, local, remote,'rmL'),
+    diffLength(remote, old,remote,'addR'),
+    diffLength(local, old,local,'addL'),
+  ].filter(e=>e)
+    .sort((a,b)=>a.score-b.score)
+    .reverse()
 
-  if (!min) return "nomin";
-  if (min === rmR) {
-    remove(offsetL, offsetL + min);
-    offsetL += min;
-    return merge(old.slice(min), remote, local.slice(min), selections, offsetL);
-  } else if (min === rmL) {
-    return merge(old.slice(min), remote.slice(min), local, selections, offsetL);
-  } else if (min === addR) {
-    add(offsetL, min);
+  const best=scored    [0]
+
+
+  console.info({
+    old, remote, local,
+
+    scored, best
+
+  })
+
+  if(!best) return ''
+  if (best.name === 'rmR') {
+    // a word was removed by another user
+    remove(offsetL, offsetL + best.editSize);
+    offsetL += best.editSize;
+    return merge(old.slice(best.editSize), remote, local.slice(best.editSize), selections, offsetL);
+
+  } else if (best.name === 'rmL') {
+    // a word was removed by the current user but not committed yet
+    return merge(old.slice(best.editSize), remote.slice(best.editSize), local, selections, offsetL);
+
+  } else if (best.name === 'addR'  ) {
+    // a word was added by a remote user
+    add(offsetL, best.editSize);
     return (
-      remote.slice(0, min) +
-      merge(old, remote.slice(min), local, selections, offsetL)
+      remote.slice(0, best.editSize) +
+      merge(old, remote.slice(best.editSize), local, selections, offsetL)
     );
-  } else if (min === addL) {
-    offsetL += min;
+
+  } else if (best.name === 'addL') {
+    // a word was added by the local user but not committed yet
+    offsetL += best.editSize;
     return (
-      local.slice(0, min) +
-      merge(old, remote, local.slice(min), selections, offsetL)
+      local.slice(0, best.editSize) +
+      merge(old, remote, local.slice(best.editSize), selections, offsetL)
     );
   }
-  return "#";
-}
-function diffLength(a = "deleter", b = "base", c = a) {
-  let aIndex = 0;
-  while (a[aIndex] !== b[0] && a[aIndex] === c[aIndex] && aIndex < a.length)
-    aIndex++;
-  return aIndex;
 }
 
-function min1(...args) {
-  return Math.min(...args.filter((o) => o));
+
+function diffLength(a = "deleter", b = "base", c, name) {
+  // return X, the number of characters that need to be removed from the
+  // beginning of A to make it start like B, while the x first characters of a and c are the same
+
+  let editSize = 0;
+  while (a[editSize] !== b[0] && a[editSize] === c[editSize] && editSize < a.length)
+    editSize++;
+
+  if(!editSize) return null
+
+  let commonCharsAfter=0
+  while(editSize+commonCharsAfter<a.length && commonCharsAfter<b.length && a[editSize+commonCharsAfter]===b[commonCharsAfter]){
+    commonCharsAfter++
+  }
+
+
+  return {
+    editSize,
+    commonCharsAfter,
+    name,
+    score:commonCharsAfter*1000-editSize,
+  };
 }
+
+
+// below is only unit tests
+
+function expect(name, real,expected){
+  if(JSON.stringify(real)!==JSON.stringify(expected)) console.error("Test fail: "+name, JSON.stringify(expected),JSON.stringify(real))
+  else console.info('Test pass : '+name)
+}
+
+expect('diffLength simple', diffLength('aaa','bbb','aaa','name'), {editSize: 3,commonCharsAfter: 0, name:'name',score: -3})
+expect('diffLength no b', diffLength('aaa','','aaa','name'), {editSize: 3,commonCharsAfter: 0, name:'name',score: -3})
+expect('diffLength no a', diffLength('','bbb','aaa','name'), null)
+expect('diffLength no c', diffLength('aaa','bbb','','name'),  null)
+expect('diffLength real', diffLength('aaa xDDDD','xDDDD','aaa xDDDD','name'),  {editSize: 4,commonCharsAfter: 5, name:'name',score: 4996})
+
+//merge(old, remote, local, selections = [], offsetL = 0)
+const old='i like big cars'
+
+// for brievery, we write the test as REMOTE_OP/LOCAL_OP
+expect('add/null',merge(old, 'i REALLY like big cars', old), 'i REALLY like big cars')
+expect('edi/null',merge(old, 'i LOVE big cars', old), 'i LOVE big cars')
+expect('del/null',merge(old, 'i love cars', old), 'i love cars')
+
+expect('null/add',merge(old, old, 'i REALLY like big cars'), 'i REALLY like big cars')
+expect('null/edi',merge(old, old, 'i LOVE big cars'), 'i LOVE big cars')
+expect('null/del',merge(old, old,'i love cars'), 'i love cars')
+
+expect('add/add',merge(old, 'i REALLY like big cars', 'i like big cars AND TRUCKS'), 'i REALLY like big cars AND TRUCKS')
+expect('add/edi',merge(old, 'i REALLY like big cars', 'i like big TRUCKS'), 'i REALLY like big TRUCKS')
+expect('add/del',merge(old, 'i REALLY like big cars', 'i like cars'), 'i REALLY like cars')
+
+expect('edi/add',merge(old, 'i LOVE big cars', 'i like big cars AND TRUCKS'), 'i LOVE big cars AND TRUCKS')
+expect('edi/edi',merge(old, 'i LOVE big cars', 'i like big TRUCKS'), 'i LOVE big TRUCKS')
+expect('edi/del',merge(old, 'i LOVE big cars', 'i like cars'), 'i LOVE cars')
+
+expect('del/add',merge(old, 'i like cars', 'i like big cars AND TRUCKS'), 'i like cars AND TRUCKS')
+expect('del/edi',merge(old, 'i like cars', 'i like big TRUCKS'), 'i like TRUCKS')
+expect('del/del',merge(old, 'like big cars', 'i like big'), 'like big')
+
+
+
+
+
