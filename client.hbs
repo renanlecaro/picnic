@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <noscript>JS needs to run for this to work</noscript>
+  <div id="editor" contenteditable="true"></div>
+  <style>
+    html,body{
+      margin:0;
+      padding: 0;
+    }
+
+    *{
+      box-sizing: border-box;
+    }
+    #editor {
+      padding: 20px;
+      min-height: 100vh;
+    }
+  </style>
+  <script>
+    var startText={{{startText}}}
+    {{{clientJS}}}
+  </script>
+</body>
+</html>
