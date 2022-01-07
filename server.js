@@ -33,6 +33,9 @@ function randomId() {
   return crypto.randomBytes(8).toString("hex");
 }
 
+if(!fs.existsSync('./data')){
+  fs.mkdirSync('./data')
+}
 function idToFilePath(id) {
   return "./data/" + id.toString().replace(/[^a-z0-9]/gi, "") + ".encrypted";
 }

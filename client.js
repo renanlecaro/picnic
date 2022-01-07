@@ -92,7 +92,7 @@ getKey()
 
     socket.addEventListener("open", function (event) {
       send({ action: "join-room", id });
-      setConnected(true) 
+      setConnected(true)
 
       socket.addEventListener('close', function (){
         setConnected(false)
