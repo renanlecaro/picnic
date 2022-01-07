@@ -4,16 +4,15 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start:production": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.2",
-    "handlebars": "^4.7.7",
-    "ws": "^8.4.0"
-  },
-  "devDependencies": {
+    "ws": "^8.4.0",
     "nodemon": "^2.0.15"
   }
+
 }
