@@ -38,6 +38,7 @@ function updateTitle(decoded) {
 
 let lastSetText=''
 async function setText(parsed, key) {
+  console.info('setText',parsed)
   try {
     const decryptedButBinary = await window.crypto.subtle.decrypt(
       {
@@ -50,6 +51,7 @@ async function setText(parsed, key) {
 
     const decoded = new TextDecoder().decode(decryptedButBinary);
 
+    console.info('decoded=',decoded)
     updateTitle(decoded);
 
     editor.style.backgroundColor =
@@ -59,7 +61,7 @@ async function setText(parsed, key) {
 
       const sel=[editor.selectionStart, editor.selectionEnd]
 
-      const merged= merge(lastSetText, decoded, editor.value, sel)
+      const merged= merge(lastSetText||decoded, decoded, editor.value, sel)
       editor.value=merged
       editor.selectionStart=sel[0]
       editor.selectionEnd=sel[1]
@@ -94,7 +96,7 @@ getKey()
           const parsed = JSON.parse(event.data);
           switch (parsed.action) {
             case "set-text":
-              setText(parsed, key) 
+              setText(parsed, key)
               break;
           }
         } catch (e) {
@@ -102,11 +104,12 @@ getKey()
         }
       });
 
-      editor.addEventListener("keyup", async (e) => {
+      const debouncedKeyUp = debounce(async (e) => {
         try {
           const decoded = e.target.value;
+          console.log('Saving ',decoded)
           updateTitle(decoded);
-
+          lastSetText=decoded;
           const iv = await window.crypto.getRandomValues(new Uint8Array(12));
           const encrypted = await window.crypto.subtle.encrypt(
             {
@@ -125,7 +128,9 @@ getKey()
         } catch (e) {
           crash(e);
         }
-      });
+      })
+
+      editor.addEventListener("keyup", debouncedKeyUp);
     });
   })
   .catch((e) => {
@@ -133,7 +138,13 @@ getKey()
   });
 
 
-
+function debounce(func, timeout = 300){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
 
 
 function crash(e) {
