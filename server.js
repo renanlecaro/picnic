@@ -8,7 +8,6 @@ const clientHTML = fs.readFileSync("./client.html").toString();
 const clientJS = fs.readFileSync("./client.js").toString();
 
 const server = http.createServer(async (req, res) => {
-
   if (req.url === "/") {
     res.writeHead(302, {
       Location: "/" + randomId(),
@@ -21,7 +20,7 @@ const server = http.createServer(async (req, res) => {
   res.writeHead(200, { "Content-Type": "text/html" });
   res.end(
     clientHTML.replace(
-      "'CLIENT_JS_INSERTED_HERE'",
+      "CLIENT_JS_INSERTED_HERE",
       `
     var startText=${startText}
     ${clientJS}
@@ -29,7 +28,6 @@ const server = http.createServer(async (req, res) => {
     )
   );
 });
-
 
 function randomId() {
   return crypto.randomBytes(8).toString("hex");
