@@ -5,7 +5,12 @@ function crash(e) {
   console.error(e);
   alert((e && e.message) || "Unknown error");
 }
-window.onerror = (message, source, lineno, colno, error) => crash(error);
+window.onerror = (message, source, lineno, colno, error) => {
+  console.error('window.onerror',{
+    message, source, lineno, colno, error
+  })
+  if(error) crash(error);
+}
 
 async function getKey() {
   if (location.hash) {
@@ -43,7 +48,6 @@ function updateTitle(decoded) {
 
 let lastSetText = "";
 async function setText(parsed, key) {
-  console.info("setText", parsed);
   try {
     const decryptedButBinary = await window.crypto.subtle.decrypt(
       {
@@ -56,11 +60,7 @@ async function setText(parsed, key) {
 
     const decoded = new TextDecoder().decode(decryptedButBinary);
 
-    console.info("decoded=", decoded);
     updateTitle(decoded);
-
-    editor.style.backgroundColor =
-      "hsl(" + Math.floor(Math.random() * 360) + ", 100%, 90%)";
 
     if (editor.value != decoded) {
       const sel = [editor.selectionStart, editor.selectionEnd];
@@ -92,11 +92,18 @@ getKey()
 
     socket.addEventListener("open", function (event) {
       send({ action: "join-room", id });
+      setConnected(true) 
 
+      socket.addEventListener('close', function (){
+        setConnected(false)
+      })
       socket.addEventListener("message", function (event) {
         try {
           const parsed = JSON.parse(event.data);
           switch (parsed.action) {
+            case "text-saved":
+              setSaving(false)
+              break
             case "set-text":
               setText(parsed, key);
               break;
@@ -132,7 +139,10 @@ getKey()
         }
       });
 
-      editor.addEventListener("keyup", debouncedKeyUp);
+      editor.addEventListener("keyup", e=>{
+        setSaving(true)
+        debouncedKeyUp(e)
+      });
     });
   })
   .catch((e) => {
@@ -264,6 +274,38 @@ function diffLength(a, b, c, name) {
     score: commonCharsAfter * 1000 - editSize,
   };
 }
+
+const savingIndicator=document.getElementById('saving-indicator')
+function setSaving(saving){
+  savingIndicator.style.display=saving?'block':'none'
+}
+setSaving(false)
+
+const disconnected=document.getElementById('disconnected')
+function setConnected(connected){
+  disconnected.style.display=!connected?'block':'none'
+  if(connected){
+    editor.removeAttribute('disabled')
+  }else{
+    editor.setAttribute('disabled', true)
+
+    setTimeout(()=>requestAnimationFrame(()=>window.location.reload()), 5000)
+
+
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 // below is only unit tests
 
