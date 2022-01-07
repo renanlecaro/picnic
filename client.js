@@ -6,11 +6,15 @@ function crash(e) {
   alert((e && e.message) || "Unknown error");
 }
 window.onerror = (message, source, lineno, colno, error) => {
-  console.error('window.onerror',{
-    message, source, lineno, colno, error
-  })
-  if(error) crash(error);
-}
+  console.error("window.onerror", {
+    message,
+    source,
+    lineno,
+    colno,
+    error,
+  });
+  if (error) crash(error);
+};
 
 async function getKey() {
   if (location.hash) {
@@ -92,18 +96,18 @@ getKey()
 
     socket.addEventListener("open", function (event) {
       send({ action: "join-room", id });
-      setConnected(true)
+      setConnected(true);
 
-      socket.addEventListener('close', function (){
-        setConnected(false)
-      })
+      socket.addEventListener("close", function () {
+        setConnected(false);
+      });
       socket.addEventListener("message", function (event) {
         try {
           const parsed = JSON.parse(event.data);
           switch (parsed.action) {
             case "text-saved":
-              setSaving(false)
-              break
+              setSaving(false);
+              break;
             case "set-text":
               setText(parsed, key);
               break;
@@ -139,9 +143,9 @@ getKey()
         }
       });
 
-      editor.addEventListener("keyup", e=>{
-        setSaving(true)
-        debouncedKeyUp(e)
+      editor.addEventListener("keyup", (e) => {
+        setSaving(true);
+        debouncedKeyUp(e);
       });
     });
   })
@@ -275,37 +279,26 @@ function diffLength(a, b, c, name) {
   };
 }
 
-const savingIndicator=document.getElementById('saving-indicator')
-function setSaving(saving){
-  savingIndicator.style.display=saving?'block':'none'
+const savingIndicator = document.getElementById("saving-indicator");
+function setSaving(saving) {
+  savingIndicator.style.display = saving ? "block" : "none";
 }
-setSaving(false)
+setSaving(false);
 
-const disconnected=document.getElementById('disconnected')
-function setConnected(connected){
-  disconnected.style.display=!connected?'block':'none'
-  if(connected){
-    editor.removeAttribute('disabled')
-  }else{
-    editor.setAttribute('disabled', true)
+const disconnected = document.getElementById("disconnected");
+function setConnected(connected) {
+  disconnected.style.display = !connected ? "block" : "none";
+  if (connected) {
+    editor.removeAttribute("disabled");
+  } else {
+    editor.setAttribute("disabled", true);
 
-    setTimeout(()=>requestAnimationFrame(()=>window.location.reload()), 5000)
-
-
+    setTimeout(
+      () => requestAnimationFrame(() => window.location.reload()),
+      5000
+    );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 // below is only unit tests
 

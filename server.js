@@ -33,8 +33,8 @@ function randomId() {
   return crypto.randomBytes(8).toString("hex");
 }
 
-if(!fs.existsSync('./data')){
-  fs.mkdirSync('./data')
+if (!fs.existsSync("./data")) {
+  fs.mkdirSync("./data");
 }
 function idToFilePath(id) {
   return "./data/" + id.toString().replace(/[^a-z0-9]/gi, "") + ".encrypted";
@@ -61,7 +61,7 @@ wss.on("connection", function connection(ws) {
     console.log(parsed);
     switch (parsed.action) {
       case "join-room":
-        if(ws.roomId) throw Error('One socket cannot join multiple rooms')
+        if (ws.roomId) throw Error("One socket cannot join multiple rooms");
         ws.roomId = parsed.id;
         if (!rooms[parsed.id]) {
           rooms[parsed.id] = [];
@@ -72,15 +72,14 @@ wss.on("connection", function connection(ws) {
         (rooms[parsed.id] || []).forEach(
           (wst) => wst !== ws && wst.send(JSON.stringify(parsed))
         );
-        ws.send(JSON.stringify({action:'text-saved'}))
+        ws.send(JSON.stringify({ action: "text-saved" }));
         await setText(parsed.id, parsed);
         break;
-
     }
   });
   ws.on("close", () => {
     const id = ws.roomId;
-    console.info('WS close '+id)
+    console.info("WS close " + id);
     if (id) {
       rooms[id] = (rooms[id] || []).filter((wst) => wst !== ws);
       if (rooms[id].length) delete rooms[id];

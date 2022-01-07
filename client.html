@@ -8,7 +8,10 @@
     <noscript>JS needs to run for this to work</noscript>
     <textarea id="editor"></textarea>
     <div id="saving-indicator">Saving...</div>
-    <div id="disconnected" style="display: none;"><div class="background"/><div class="text">Disconnected</div></div>
+    <div id="disconnected" style="display: none">
+      <div class="background" />
+      <div class="text">Disconnected</div>
+    </div>
     <style>
       html,
       body {
@@ -28,41 +31,38 @@
         width: 100%;
         resize: none;
       }
-      #saving-indicator{
+      #saving-indicator {
         position: fixed;
         bottom: 0;
         right: 0;
         font-weight: bold;
         padding: 20px;
         line-height: 20px;
-        background:white;
+        background: white;
       }
-      #disconnected{
-
+      #disconnected {
       }
 
-      #disconnected .background{
+      #disconnected .background {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background:rgba(0,0,0,0.1);
+        background: rgba(0, 0, 0, 0.1);
       }
-      #disconnected .text{
+      #disconnected .text {
         position: fixed;
         left: 0;
         right: 0;
         text-align: center;
         top: 50%;
-        transform: translate(0,-50%);
+        transform: translate(0, -50%);
         font-weight: bold;
         padding: 20px;
         line-height: 20px;
-        background:white;
+        background: white;
       }
-
-
     </style>
     <script>
       CLIENT_JS_INSERTED_HERE;
