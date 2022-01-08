@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body>
+<noscript>JS needs to run for this to work</noscript>
+<textarea id="editor" autocomplete="off"></textarea>
+<div id="saving-indicator">Saving...</div>
+<div id="disconnected" style="display: none"> Disconnected, reconnecting
+
+</div>
+<style>
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f2f2f2;
+    overflow: hidden;
+
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  #editor {
+    font-size: 16px;
+    padding: 20px;
+    line-height: 20px;
+    min-height: 100vh;
+    display: block;
+    width: 100%;
+    resize: none;
+  }
+
+  #editor,
+  #editor:focus {
+
+    border: none;
+    outline: none;
+    box-shadow: none;
+  }
+
+  @media (min-width: 800px) {
+    #editor {
+      padding: 20px calc((100vw - 800px) / 2);
+
+    }
+  }
+
+  #saving-indicator {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    font-weight: bold;
+    padding: 20px;
+    line-height: 20px;
+    background: white;
+  }
+
+  #disconnected {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    font-weight: bold;
+    padding: 20px;
+    line-height: 20px;
+    background: white;
+  }
+</style>
+<script>
+  CLIENT_JS_INSERTED_HERE;
+</script>
+</body>
+</html>

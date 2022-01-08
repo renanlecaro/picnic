@@ -3,9 +3,9 @@ const { WebSocketServer } = require("ws");
 const http = require("http");
 const fs = require("fs");
 
-const clientHTML = fs.readFileSync("./client.html").toString();
+const clientHTML = fs.readFileSync("./src/client/index.html").toString();
 
-const clientJS = fs.readFileSync("./client.js").toString();
+const clientJS = fs.readFileSync("./build/index.js").toString();
 
 const server = http.createServer(async (req, res) => {
   if (req.url === "/") {
@@ -22,7 +22,7 @@ const server = http.createServer(async (req, res) => {
     clientHTML.replace(
       "CLIENT_JS_INSERTED_HERE",
       `
-    var startText=${startText}
+    var startText=${startText};
     ${clientJS}
     `
     )
