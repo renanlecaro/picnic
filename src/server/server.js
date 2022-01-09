@@ -51,7 +51,6 @@ async function getText(id) {
 
 async function setText(id, text) {
   const asJSON = JSON.stringify(text);
-  console.log(asJSON.length);
   if (asJSON.length > 16000) return false;
   fs.writeFileSync(idToFilePath(id), asJSON);
   return true;
@@ -73,16 +72,11 @@ wss.on("connection", function connection(ws) {
         rooms[parsed.id].push(ws);
         break;
       case "set-text":
-        (rooms[parsed.id] || []).forEach(
-          (wst) => wst !== ws && wst.send(JSON.stringify(parsed))
+        (rooms[parsed.id] || []).forEach((wst) =>
+          wst.send(JSON.stringify(parsed))
         );
-        const worked = await setText(parsed.id, parsed);
-        console.log(worked);
-        if (worked) {
-          ws.send(JSON.stringify({ action: "text-saved" }));
-        } else {
-          ws.send(JSON.stringify({ action: "text-too-long" }));
-        }
+        await setText(parsed.id, parsed);
+
         break;
     }
   });

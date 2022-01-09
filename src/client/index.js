@@ -3,10 +3,9 @@ import { clearErrorMessage, crash } from "./crash";
 import { getKey } from "./getKey";
 import { updateTitle } from "./updateTitle";
 import { setText } from "./setText";
-import { setDecodedText } from "./setDecodedText";
+import { setDecodedText, updateSavingIndicator } from "./setDecodedText";
 import { debounce } from "./debounce";
 import { bufferToS } from "./bufferToS";
-import { setSaving } from "./setSaving";
 
 export const editor = document.getElementById("editor");
 export const id = location.pathname.slice(1);
@@ -72,15 +71,9 @@ getKey()
         try {
           const parsed = JSON.parse(event.data);
           switch (parsed.action) {
-            case "text-saved":
-              setSaving(false);
-              clearErrorMessage();
-              break;
             case "set-text":
               setText(parsed, key);
-              break;
-            case "text-too-long":
-              crash("The text is too long, the server didn't save it to disk");
+              clearErrorMessage();
               break;
           }
         } catch (e) {
@@ -89,7 +82,7 @@ getKey()
       });
 
       editor.addEventListener("keyup", () => {
-        setSaving(true);
+        updateSavingIndicator();
         debouncedKeyUp();
       });
     });
