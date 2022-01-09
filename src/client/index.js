@@ -3,13 +3,10 @@ import { clearErrorMessage, crash } from "./crash";
 import { getKey } from "./getKey";
 import { updateTitle } from "./updateTitle";
 import { setText } from "./setText";
-import {
-  isSaving,
-  setDecodedText,
-  updateSavingIndicator,
-} from "./setDecodedText";
+import { isSaving, setDecodedText } from "./setDecodedText";
 import { throttle } from "./debounce";
 import { bufferToS } from "./bufferToS";
+import { updateInfoToast } from "./updateInfoToast";
 
 export const editor = document.getElementById("editor");
 export const id = location.pathname.slice(1);
@@ -20,15 +17,12 @@ if (editor.value) editor.value = "";
 console.clear();
 let fails = 0;
 let sessionId = Date.now();
-if (window.debugmode) {
-  document.getElementById("debug").style.display = "block";
-}
+let firstConnection = true;
 
 let version = 0;
 function setVersion(v) {
   if (v <= version) return false;
   version = v;
-  document.getElementById("debug").innerText = "v" + v;
   return true;
 }
 
@@ -42,12 +36,14 @@ function connect(key) {
     console.info("sending ", data);
     socket.send(JSON.stringify(data));
   }
-
-  if (startText) {
-    setText(startText, key);
-  } else {
-    // new doc
-    setDecodedText(defaultText, editor);
+  if (firstConnection) {
+    firstConnection = false;
+    if (startText) {
+      setText(startText, key);
+    } else {
+      // new doc
+      setDecodedText(defaultText, editor);
+    }
   }
   let lastEditorVal = editor.value;
   const debouncedKeyUp = throttle(async () => {
@@ -89,7 +85,7 @@ function connect(key) {
   }, 600);
 
   function onKeyUp() {
-    updateSavingIndicator(editor);
+    if (isSaving()) updateInfoToast("info", "Saving...");
     debouncedKeyUp();
   }
 
@@ -112,6 +108,7 @@ function connect(key) {
   function onOpen() {
     send({ action: "join-room", id });
     clearErrorMessage();
+    updateInfoToast("info", "Connected");
   }
 
   function backupAutoSave() {

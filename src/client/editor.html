@@ -13,94 +13,11 @@
       maxlength="10000"
       disabled
     ></textarea>
-    <div id="saving-indicator">Saving...</div>
-    <div id="errorMsg"></div>
-    <div id="debug" style="display: none"></div>
+
+    <div id="info"></div>
 
     <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        background: #f2f2f2;
-        overflow: hidden;
-        font-family: sans-serif;
-        font-size: 16px;
-        line-height: 20px;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      #editor {
-        padding: 20px;
-        min-height: 100vh;
-        display: block;
-        width: 100%;
-        resize: none;
-        font: inherit;
-      }
-
-      #editor,
-      #editor:focus {
-        border: none;
-        outline: none;
-        box-shadow: none;
-      }
-
-      @media (min-width: 800px) {
-        #editor {
-          padding: 20px calc((100vw - 800px) / 2);
-        }
-      }
-
-      #editor.disabled {
-        opacity: 0.5;
-      }
-
-      #saving-indicator {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        font-weight: bold;
-        padding: 20px;
-        line-height: 20px;
-        background: white;
-      }
-
-      #errorMsg {
-        z-index: 1;
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        font-weight: bold;
-        padding: 20px;
-        line-height: 20px;
-        background: red;
-        color: white;
-        display: none;
-      }
-      #errorMsg.visible {
-        animation: slideIn ease-out 0.6s;
-        display: block;
-      }
-      @keyframes slideIn {
-        0%,
-        50% {
-          transform: translate(0, 100%);
-        }
-      }
-      #debug {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        font-weight: bold;
-        padding: 20px;
-        line-height: 20px;
-        background: white;
-      }
+      CLIENT_CSS_INSERTED_HERE
     </style>
     <script>
       CLIENT_JS_INSERTED_HERE;

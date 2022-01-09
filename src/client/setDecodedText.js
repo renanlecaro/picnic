@@ -1,11 +1,13 @@
 import { merge, withTrace } from "./merge";
 import { updateTitle } from "./updateTitle";
+import { updateInfoToast } from "./updateInfoToast";
 
 let lastSetText = "";
 
 export function setDecodedText(decoded, editor, madeByMe) {
   if (madeByMe) {
     console.info("setDecodedText ignored, madeByMe");
+    updateInfoToast("success", "Saved");
   } else {
     console.info("setDecodedText applied");
     const sel = [editor.selectionStart, editor.selectionEnd];
@@ -28,16 +30,12 @@ export function setDecodedText(decoded, editor, madeByMe) {
     editor.selectionStart = sel[0];
     editor.selectionEnd = sel[1];
     updateTitle(editor.value);
+    updateInfoToast("info", "Up to date");
   }
+
   lastSetText = decoded;
-  updateSavingIndicator(editor);
 }
 
 export function isSaving() {
   return lastSetText !== editor.value;
-}
-
-const savingIndicator = document.getElementById("saving-indicator");
-export function updateSavingIndicator(editor) {
-  savingIndicator.style.display = isSaving() ? "block" : "none";
 }

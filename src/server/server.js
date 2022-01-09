@@ -8,6 +8,7 @@ const { debugmode } = process.env;
 const homeHTML = fs.readFileSync("./src/client/index.html").toString();
 const clientHTML = fs.readFileSync("./src/client/editor.html").toString();
 const clientJS = fs.readFileSync("./build/index.js").toString();
+const clientCSS = fs.readFileSync("./src/client/client.css").toString();
 
 const server = http.createServer(async (req, res) => {
   if (req.url === "/") {
@@ -16,10 +17,9 @@ const server = http.createServer(async (req, res) => {
       "Content-Type": "text/html",
     });
     res.end(
-      homeHTML.replace(
-        "DOC_ID_WILL_GO_HERE",
-        crypto.randomBytes(8).toString("hex")
-      )
+      homeHTML
+        .replace("DOC_ID_WILL_GO_HERE", crypto.randomBytes(8).toString("hex"))
+        .replace("CLIENT_CSS_INSERTED_HERE", clientCSS)
     );
     // res.end(homeHTML.replace('DOC_ID_WILL_GO_HERE', crypto.randomBytes(8).toString("hex")));
     return;
@@ -32,14 +32,16 @@ const server = http.createServer(async (req, res) => {
     "Content-Type": "text/html",
   });
   res.end(
-    clientHTML.replace(
-      "CLIENT_JS_INSERTED_HERE",
-      `
+    clientHTML
+      .replace(
+        "CLIENT_JS_INSERTED_HERE",
+        `
     window.debugmode=${!!debugmode};
     var startText=${startText};
     ${clientJS} 
     `
-    )
+      )
+      .replace("CLIENT_CSS_INSERTED_HERE", clientCSS)
   );
 });
 
