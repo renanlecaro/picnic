@@ -135,17 +135,12 @@ function connect(key) {
     socket.removeEventListener("message", onMessage);
     editor.removeEventListener("change", onKeyUp);
     editor.removeEventListener("keyup", onKeyUp);
-    crash(
-      "Reconnecting, " +
-        ({ 0: "first", 1: "second", 2: "third" }[fails] || fails + 1 + "th") +
-        " attempt ..."
-    );
-    console.info("Reconnecting...", fails, err);
-    setTimeout(
-      () => requestAnimationFrame(() => connect(key)),
-      1000 * (Math.pow(2, fails) - 1)
-    );
+    crash("Reconnecting" + "...".slice(0, (fails % 3) + 1));
+    const delay = 500 * (Math.pow(1.1, fails) - 1);
+
+    setTimeout(() => requestAnimationFrame(() => connect(key)), delay);
     fails++;
+    console.error({ err, fails, delay });
   }
 }
 
