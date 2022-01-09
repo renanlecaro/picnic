@@ -94,7 +94,7 @@ p {
   line-height: 20px;
   padding: 10px 20px;
   color: #333;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.8);
   display: none;
 }
 #info.info {
@@ -118,7 +118,7 @@ p {
   }
   #info {
     color: white;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
   }
   a {
     color: #879df4;
