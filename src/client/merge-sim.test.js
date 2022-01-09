@@ -1,4 +1,4 @@
-import { merge } from "./merge";
+import { merge, withTrace } from "./merge";
 
 function exchange(startText = "", cb) {
   let texts = [startText, startText];
@@ -142,6 +142,46 @@ describe("simulated_exchanges", () => {
       i really |like cats          i really like cats and dogs|
       i really |like cats          i really like cats and dogs|
       i really |like cats and dogs i really like cats and dogs|
+      "
+    `);
+  });
+  test("edits while syncing", () => {
+    expect(
+      exchange("i like cats", ({ setCursor, type, send, after }) => {
+        setCursor(0, after(0, "i "));
+        type(0, "rea");
+        setCursor(1, after(1, "cats"));
+        type(1, " and");
+        const cbA = send(0);
+        const cbB = send(1);
+        type(1, " dogs");
+        type(0, "lly ");
+        withTrace(() => {
+          cbA();
+        });
+        withTrace(() => {
+          cbB();
+        });
+        send(0)();
+        send(1)();
+      })
+    ).toMatchInlineSnapshot(`
+      "
+      |i like cats             |i like cats            
+      i |like cats             |i like cats            
+      i rea|like cats          |i like cats            
+      i rea|like cats          i like cats|            
+      i rea|like cats          i like cats and|        
+      i rea|like cats          i like cats and|        
+      i rea|like cats          i like cats and|        
+      i rea|like cats          i like cats and dogs|   
+      i really |like cats      i like cats and dogs|   
+      i realy |like cats       i realike cats and dogs|
+      i ly |like cats and      i like cats and dogs|   
+      i ly |like cats and      i like cats and dogs|   
+      i ly |like cats and      i ly like cats and dogs|
+      i ly |like cats and      i ly like cats and dogs|
+      i ly |like cats and dogs i ly like cats and dogs|
       "
     `);
   });

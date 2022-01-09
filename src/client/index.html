@@ -7,9 +7,8 @@
   <body>
     <noscript>JS needs to run for this to work</noscript>
     <form action="/DOC_ID_WILL_GO_HERE" method="get">
-      <h1>Privacy first collaborative text editor</h1>
-
-      <button type="submit">Create a new document</button>
+      <h1>Collaborative text editor</h1>
+      <button type="submit">new document</button>
 
       <p>
         Picnic is a very generic app that tries to solve one specific problem :
@@ -22,19 +21,17 @@
         difficult to know who brings what and what is missing.
       </p>
       <p>
-        With picnic, you just go to https://picnic.lecaro.me/, edit the document
-        to list everything that is needed, and share the link to your friends.
-        They can edit the doc without any authentication, all that's needed is
-        the link.
-      </p>
-      <p>
-        From a technical standpoint, the code is very simple and short, and the
-        number of dependencies is minimal.
+        With picnic, you just create a document, post the link in the group
+        chat, and then edit it together.
       </p>
       <p>
         The hosted version of this software is provided without any guarantee,
         if you don't want your texts to disappear one day, I'd recommend setting
         up your own instance.
+      </p>
+      <p>
+        Picnic is open source, check it out on
+        <a href="https://github.com/renanlecaro/picnic">github</a>
       </p>
     </form>
     <style>
@@ -59,13 +56,14 @@
       }
       h1 {
         font-size: 1.5em;
+        float: left;
       }
 
       button {
+        float: right;
         display: flex;
         background: limegreen;
         box-shadow: 0 5px 0 #2bb02b;
-        margin-bottom: 10px;
         border: none;
         padding: 15px 20px;
         border-radius: 5px;
@@ -76,6 +74,7 @@
         line-height: 20px;
         cursor: pointer;
         transition: all 0.1s;
+        margin-bottom: 40px;
       }
       button:hover,
       button:focus {
@@ -86,6 +85,9 @@
         transform: translate(0, 5px);
         box-shadow: 0 0 0 #2bb02b;
         background: #2fc62f;
+      }
+      p {
+        clear: both;
       }
     </style>
   </body>

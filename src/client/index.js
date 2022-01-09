@@ -4,7 +4,7 @@ import { getKey } from "./getKey";
 import { updateTitle } from "./updateTitle";
 import { setText } from "./setText";
 import { setDecodedText, updateSavingIndicator } from "./setDecodedText";
-import { debounce } from "./debounce";
+import { throttle } from "./debounce";
 import { bufferToS } from "./bufferToS";
 
 export const editor = document.getElementById("editor");
@@ -31,12 +31,18 @@ function connect(key) {
     // new doc
     setDecodedText(defaultText, editor);
   }
-
-  const debouncedKeyUp = debounce(async () => {
+  let lastEditorVal = editor.value;
+  const debouncedKeyUp = throttle(async () => {
     try {
       const decoded = editor.value;
+      if (decoded == lastEditorVal) {
+        return console.debug("No change, event ignored");
+      }
+      lastEditorVal = decoded;
       updateTitle(decoded);
+
       const iv = await window.crypto.getRandomValues(new Uint8Array(12));
+
       const encrypted = await window.crypto.subtle.encrypt(
         {
           name: "AES-GCM",
@@ -45,9 +51,10 @@ function connect(key) {
         key,
         new TextEncoder().encode(decoded)
       );
+
       send({
         action: "set-text",
-        ciphertext: bufferToS(encrypted),
+        ciphertext: window.cleartext ? decoded : bufferToS(encrypted),
         iv: bufferToS(iv),
         id,
       });
@@ -88,6 +95,7 @@ function connect(key) {
   socket.addEventListener("close", wipe);
   socket.addEventListener("error", wipe);
   socket.addEventListener("message", onMessage);
+  editor.addEventListener("change", onKeyUp);
   editor.addEventListener("keyup", onKeyUp);
 
   function wipe(err) {
@@ -95,6 +103,7 @@ function connect(key) {
     socket.removeEventListener("close", wipe);
     socket.removeEventListener("error", wipe);
     socket.removeEventListener("message", onMessage);
+    editor.removeEventListener("change", onKeyUp);
     editor.removeEventListener("keyup", onKeyUp);
     crash("Reconnecting...");
     setTimeout(

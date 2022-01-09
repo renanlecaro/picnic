@@ -27,15 +27,15 @@ const server = http.createServer(async (req, res) => {
   const startText = JSON.stringify(await getText(id));
   res.writeHead(200, {
     "Cache-Control": "no-cache",
-
     "Content-Type": "text/html",
   });
   res.end(
     clientHTML.replace(
       "CLIENT_JS_INSERTED_HERE",
       `
+    window.cleartext=${!!process.env.cleartext};
     var startText=${startText};
-    ${clientJS}
+    ${clientJS} 
     `
     )
   );
@@ -61,11 +61,15 @@ async function setText(id, text) {
 }
 
 const rooms = {};
-const wss = new WebSocketServer({ server });
-wss.on("connection", function connection(ws) {
+const wss = new WebSocketServer({ server, perMessageDeflate: false });
+wss.on("connection", function connection(ws, req) {
+  const ip = req.headers["x-forwarded-for"]
+    ? req.headers["x-forwarded-for"].split(",")[0].trim()
+    : req.socket.remoteAddress;
+
+  console.log(ip + " connected");
   ws.on("message", async function message(data) {
     const parsed = JSON.parse(data);
-    console.log(parsed);
     switch (parsed.action) {
       case "join-room":
         if (ws.roomId) throw Error("One socket cannot join multiple rooms");
@@ -76,6 +80,14 @@ wss.on("connection", function connection(ws) {
         rooms[parsed.id].push(ws);
         break;
       case "set-text":
+        console.log(
+          "set-text " +
+            JSON.stringify(parsed.ciphertext) +
+            " for all " +
+            rooms[parsed.id].length +
+            " participants of room " +
+            parsed.id
+        );
         (rooms[parsed.id] || []).forEach((wst) =>
           wst.send(JSON.stringify(parsed))
         );
@@ -84,11 +96,11 @@ wss.on("connection", function connection(ws) {
     }
   });
   ws.on("close", () => {
-    const id = ws.roomId;
-    console.info("WS close " + id);
-    if (id) {
-      rooms[id] = (rooms[id] || []).filter((wst) => wst !== ws);
-      if (rooms[id].length) delete rooms[id];
+    const { roomId } = ws;
+
+    if (roomId) {
+      rooms[roomId] = (rooms[roomId] || []).filter((wst) => wst !== ws);
+      if (!rooms[roomId].length) delete rooms[roomId];
     }
   });
 });

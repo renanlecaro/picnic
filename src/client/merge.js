@@ -72,9 +72,8 @@ export function merge(old, remote, local, selections = []) {
 
     if (!best) break;
 
-    if (trace) console.debug(best.name + " : " + JSON.stringify(best));
-
     if (best.name === "rmR") {
+      if (trace) console.debug("Remote deleted : " + old.slice(best.editSize));
       // a word was removed by another user
       remove(offsetL, offsetL + best.editSize);
       offsetL += best.editSize;
@@ -84,6 +83,7 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "rmL") {
+      if (trace) console.debug("Local deleted : " + old.slice(best.editSize));
       // a word was removed by the current user but not committed yet
       old = old.slice(best.editSize);
       remote = remote.slice(best.editSize);
@@ -91,6 +91,8 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "addR") {
+      if (trace)
+        console.debug("Remote added : " + remote.slice(0, best.editSize));
       // a word was added by a remote user
       add(offsetL, best.editSize);
       result += remote.slice(0, best.editSize);
@@ -99,6 +101,8 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "addL") {
+      if (trace)
+        console.debug("Local added : " + local.slice(0, best.editSize));
       // a word was added by the local user but not committed yet
       offsetL += best.editSize;
       result += local.slice(0, best.editSize);

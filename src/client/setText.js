@@ -4,6 +4,9 @@ import { sToBuffer } from "./sToBuffer";
 
 export async function setText(parsed, key) {
   try {
+    if (window.cleartext) {
+      return setDecodedText(parsed.ciphertext, editor);
+    }
     const decryptedButBinary = await window.crypto.subtle.decrypt(
       {
         name: "AES-GCM",
