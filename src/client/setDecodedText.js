@@ -1,6 +1,5 @@
-import { merge } from "./merge";
+import { merge, withTrace } from "./merge";
 import { updateTitle } from "./updateTitle";
-import { editor } from "./index";
 
 let lastSetText = "";
 
@@ -10,7 +9,7 @@ export function setDecodedText(decoded, editor) {
   const old = lastSetText;
   const remote = decoded;
   const local = editor.value;
-  const result = merge(old, remote, local, sel);
+  const result = withTrace(() => merge(old, remote, local, sel));
   console.log({
     old,
     remote,
@@ -22,11 +21,11 @@ export function setDecodedText(decoded, editor) {
   editor.selectionEnd = sel[1];
   updateTitle(editor.value);
   lastSetText = decoded;
-  updateSavingIndicator();
+  updateSavingIndicator(editor);
 }
 
 const savingIndicator = document.getElementById("saving-indicator");
-export function updateSavingIndicator() {
+export function updateSavingIndicator(editor) {
   savingIndicator.style.display =
     lastSetText !== editor.value ? "block" : "none";
 }

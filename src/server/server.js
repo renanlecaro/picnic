@@ -3,16 +3,21 @@ const { WebSocketServer } = require("ws");
 const http = require("http");
 const fs = require("fs");
 
-const clientHTML = fs.readFileSync("./src/client/index.html").toString();
-
+const homeHTML = fs.readFileSync("./src/client/index.html").toString();
+const clientHTML = fs.readFileSync("./src/client/editor.html").toString();
 const clientJS = fs.readFileSync("./build/index.js").toString();
 
 const server = http.createServer(async (req, res) => {
   if (req.url === "/") {
-    res.writeHead(302, {
-      Location: "/" + randomId(),
-    });
-    return res.end();
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(
+      fs
+        .readFileSync("./src/client/index.html")
+        .toString()
+        .replace("DOC_ID_WILL_GO_HERE", crypto.randomBytes(8).toString("hex"))
+    );
+    // res.end(homeHTML.replace('DOC_ID_WILL_GO_HERE', crypto.randomBytes(8).toString("hex")));
+    return;
   }
 
   const id = req.url.slice(1);
@@ -29,20 +34,12 @@ const server = http.createServer(async (req, res) => {
   );
 });
 
-function randomId() {
-  return crypto.randomBytes(8).toString("hex");
-}
-
-if (!fs.existsSync("./data")) {
-  fs.mkdirSync("./data");
-}
 function idToFilePath(id) {
   return "./data/" + id.toString().replace(/[^a-z0-9]/gi, "") + ".encrypted";
 }
 
 async function getText(id) {
   const path = idToFilePath(id);
-
   if (!fs.existsSync(path)) {
     return null;
   }

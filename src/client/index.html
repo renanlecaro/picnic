@@ -6,11 +6,37 @@
   </head>
   <body>
     <noscript>JS needs to run for this to work</noscript>
-    <!--The server will not save an (encrypted) file above 16000 chars-->
-    <textarea id="editor" autocomplete="off" maxlength="10000"></textarea>
-    <div id="saving-indicator">Saving...</div>
-    <div id="errorMsg"></div>
+    <form action="/DOC_ID_WILL_GO_HERE" method="get">
+      <h1>Privacy first collaborative text editor</h1>
 
+      <button type="submit">Create a new document</button>
+
+      <p>
+        Picnic is a very generic app that tries to solve one specific problem :
+        You are organizing a picnic with friends and need to decide who brings
+        what.
+      </p>
+      <p>
+        You could spam the WhatsApp group with messages like "I'll bring
+        sandwiches" and "I'll bring drinks" but it quickly gets messy and
+        difficult to know who brings what and what is missing.
+      </p>
+      <p>
+        With picnic, you just go to https://picnic.lecaro.me/, edit the document
+        to list everything that is needed, and share the link to your friends.
+        They can edit the doc without any authentication, all that's needed is
+        the link.
+      </p>
+      <p>
+        From a technical standpoint, the code is very simple and short, and the
+        number of dependencies is minimal.
+      </p>
+      <p>
+        The hosted version of this software is provided without any guarantee,
+        if you don't want your texts to disappear one day, I'd recommend setting
+        up your own instance.
+      </p>
+    </form>
     <style>
       html,
       body {
@@ -20,70 +46,47 @@
         overflow: hidden;
         font-family: sans-serif;
         font-size: 16px;
-        line-height: 20px;
+        line-height: 1.5;
       }
 
       * {
         box-sizing: border-box;
       }
-
-      #editor {
-        padding: 20px;
-        min-height: 100vh;
-        display: block;
-        width: 100%;
-        resize: none;
-        font: inherit;
+      form {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px;
+      }
+      h1 {
+        font-size: 1.5em;
       }
 
-      #editor,
-      #editor:focus {
+      button {
+        display: flex;
+        background: limegreen;
+        box-shadow: 0 5px 0 #2bb02b;
+        margin-bottom: 10px;
         border: none;
-        outline: none;
-        box-shadow: none;
-      }
-
-      @media (min-width: 800px) {
-        #editor {
-          padding: 20px calc((100vw - 800px) / 2);
-        }
-      }
-
-      #saving-indicator {
-        position: fixed;
-        bottom: 0;
-        right: 0;
+        padding: 15px 20px;
+        border-radius: 5px;
+        font-size: 1em;
+        text-transform: uppercase;
         font-weight: bold;
-        padding: 20px;
-        line-height: 20px;
-        background: white;
-      }
-
-      #errorMsg {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        font-weight: bold;
-        padding: 20px;
-        line-height: 20px;
-        background: red;
         color: white;
-        display: none;
+        line-height: 20px;
+        cursor: pointer;
+        transition: all 0.1s;
       }
-      #errorMsg.visible {
-        animation: slideIn ease-out 0.6s;
-        display: block;
+      button:hover,
+      button:focus {
+        background: #2fc62f;
       }
-      @keyframes slideIn {
-        0%,
-        50% {
-          transform: translate(0, 100%);
-        }
+
+      button:active {
+        transform: translate(0, 5px);
+        box-shadow: 0 0 0 #2bb02b;
+        background: #2fc62f;
       }
     </style>
-    <script>
-      CLIENT_JS_INSERTED_HERE;
-    </script>
   </body>
 </html>

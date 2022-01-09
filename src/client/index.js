@@ -82,7 +82,7 @@ getKey()
       });
 
       editor.addEventListener("keyup", () => {
-        updateSavingIndicator();
+        updateSavingIndicator(editor);
         debouncedKeyUp();
       });
     });

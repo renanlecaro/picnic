@@ -81,10 +81,20 @@ describe("merge", () => {
     expect(merge(old, "big cars", old)).toEqual("big cars");
   });
   test("both add", () => {
-    expect(
-      withTrace(() => merge("hello", "hello world", "hello world"))
-    ).toEqual("hello world");
+    expect(merge("hello", "hello world", "hello world")).toEqual("hello world");
   });
+  test("both remove", () => {
+    expect(merge("hello world", "hello", "hello")).toEqual("hello");
+  });
+  test("both change", () => {
+    expect(merge("hello world", "hello cat", "hello cat")).toEqual("hello cat");
+  });
+  test("both removed with potential for double remove", () => {
+    expect(merge("hello world world", "hello world", "hello world")).toEqual(
+      "hello world"
+    );
+  });
+
   test("typing concurrently", () => {
     const old = "Shopping list : \nTomatoes";
     const remote1 = "Shopping list : \nPot\nTomatoes";
