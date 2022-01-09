@@ -1,21 +1,19 @@
-import {defaultText} from "./defaultText";
-import {crash} from "./crash";
-import {getKey} from "./getKey";
-import {updateTitle} from "./updateTitle";
-import {setText} from "./setText";
-import {getLastSetText, setDecodedText, setLastSetText} from "./setDecodedText";
-import {debounce} from "./debounce";
-import {bufferToS} from "./bufferToS";
-import {setSaving} from "./setSaving";
-import {setConnected} from "./setConnected";
+import { defaultText } from "./defaultText";
+import { clearErrorMessage, crash } from "./crash";
+import { getKey } from "./getKey";
+import { updateTitle } from "./updateTitle";
+import { setText } from "./setText";
+import { setDecodedText } from "./setDecodedText";
+import { debounce } from "./debounce";
+import { bufferToS } from "./bufferToS";
+import { setSaving } from "./setSaving";
 
 export const editor = document.getElementById("editor");
 export const id = location.pathname.slice(1);
 
 // ensure that the value of the textarea is not kept upon reloads.
 // Maybe not required
-if (editor.value) editor.value = ''
-
+if (editor.value) editor.value = "";
 
 getKey()
   .then((key) => {
@@ -31,13 +29,11 @@ getKey()
       setText(startText, key);
     } else {
       // new doc
-      setDecodedText(defaultText, () => null)
-
+      setDecodedText(defaultText, editor);
     }
 
     socket.addEventListener("open", function (event) {
-      send({action: "join-room", id});
-      setConnected(true);
+      send({ action: "join-room", id });
 
       const debouncedKeyUp = debounce(async () => {
         try {
@@ -60,18 +56,17 @@ getKey()
           });
 
           console.log({
-            type: 'sent-set-text',
-            decoded
-          })
-
+            type: "sent-set-text",
+            decoded,
+          });
         } catch (e) {
           crash(e);
         }
       });
 
-
       socket.addEventListener("close", function () {
-        setConnected(false);
+        editor.disabled = true;
+        crash("Disconnected from server, reload the page to sync");
       });
       socket.addEventListener("message", function (event) {
         try {
@@ -79,10 +74,13 @@ getKey()
           switch (parsed.action) {
             case "text-saved":
               setSaving(false);
-
+              clearErrorMessage();
               break;
             case "set-text":
               setText(parsed, key);
+              break;
+            case "text-too-long":
+              crash("The text is too long, the server didn't save it to disk");
               break;
           }
         } catch (e) {
@@ -99,5 +97,3 @@ getKey()
   .catch((e) => {
     crash(e);
   });
-
-

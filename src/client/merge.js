@@ -1,4 +1,4 @@
-import {diffLength} from "./diffLength";
+import { diffLength } from "./diffLength";
 
 export function merge(old, remote, local, selections = [], offsetL = 0) {
   const shift = (cb) =>
@@ -14,7 +14,7 @@ export function merge(old, remote, local, selections = [], offsetL = 0) {
     old[noCh] == remote[noCh] &&
     remote[noCh] == local[noCh] &&
     noCh < old.length
-    )
+  )
     noCh++;
   if (noCh) {
     offsetL += noCh;

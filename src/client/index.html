@@ -1,78 +1,89 @@
 <!DOCTYPE html>
 <html lang="en-US">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-</head>
-<body>
-<noscript>JS needs to run for this to work</noscript>
-<textarea id="editor" autocomplete="off"></textarea>
-<div id="saving-indicator">Saving...</div>
-<div id="disconnected" style="display: none"> Disconnected, reconnecting
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <noscript>JS needs to run for this to work</noscript>
+    <!--The server will not save an (encrypted) file above 16000 chars-->
+    <textarea id="editor" autocomplete="off" maxlength="10000"></textarea>
+    <div id="saving-indicator">Saving...</div>
+    <div id="errorMsg"></div>
 
-</div>
-<style>
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    background: #f2f2f2;
-    overflow: hidden;
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f2f2f2;
+        overflow: hidden;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+      }
 
-  }
+      * {
+        box-sizing: border-box;
+      }
 
-  * {
-    box-sizing: border-box;
-  }
+      #editor {
+        padding: 20px;
+        min-height: 100vh;
+        display: block;
+        width: 100%;
+        resize: none;
+        font: inherit;
+      }
 
-  #editor {
-    font-size: 16px;
-    padding: 20px;
-    line-height: 20px;
-    min-height: 100vh;
-    display: block;
-    width: 100%;
-    resize: none;
-  }
+      #editor,
+      #editor:focus {
+        border: none;
+        outline: none;
+        box-shadow: none;
+      }
 
-  #editor,
-  #editor:focus {
+      @media (min-width: 800px) {
+        #editor {
+          padding: 20px calc((100vw - 800px) / 2);
+        }
+      }
 
-    border: none;
-    outline: none;
-    box-shadow: none;
-  }
+      #saving-indicator {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        font-weight: bold;
+        padding: 20px;
+        line-height: 20px;
+        background: white;
+      }
 
-  @media (min-width: 800px) {
-    #editor {
-      padding: 20px calc((100vw - 800px) / 2);
-
-    }
-  }
-
-  #saving-indicator {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    font-weight: bold;
-    padding: 20px;
-    line-height: 20px;
-    background: white;
-  }
-
-  #disconnected {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-
-    font-weight: bold;
-    padding: 20px;
-    line-height: 20px;
-    background: white;
-  }
-</style>
-<script>
-  CLIENT_JS_INSERTED_HERE;
-</script>
-</body>
+      #errorMsg {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        font-weight: bold;
+        padding: 20px;
+        line-height: 20px;
+        background: red;
+        color: white;
+        display: none;
+      }
+      #errorMsg.visible {
+        animation: slideIn ease-out 0.6s;
+        display: block;
+      }
+      @keyframes slideIn {
+        0%,
+        50% {
+          transform: translate(0, 100%);
+        }
+      }
+    </style>
+    <script>
+      CLIENT_JS_INSERTED_HERE;
+    </script>
+  </body>
 </html>

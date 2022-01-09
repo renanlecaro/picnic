@@ -1,7 +1,14 @@
+const msg = document.getElementById("errorMsg");
 
 export function crash(e) {
   console.error(e);
-  alert((e && e.message) || "Unknown error");
+  msg.classList.add("visible");
+  msg.innerText =
+    (typeof e === "string" && e) || (e && e.message) || "Unknown error";
+}
+
+export function clearErrorMessage() {
+  msg.classList.remove("visible");
 }
 
 window.onerror = (message, source, lineno, colno, error) => {
@@ -12,5 +19,5 @@ window.onerror = (message, source, lineno, colno, error) => {
     colno,
     error,
   });
-  if (error) crash(error);
+  if (error) crash(error || message);
 };

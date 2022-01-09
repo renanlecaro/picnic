@@ -7,7 +7,7 @@ export function diffLength(a, b, c, name) {
     a[editSize] !== b[0] &&
     a[editSize] === c[editSize] &&
     editSize < a.length
-    )
+  )
     editSize++;
 
   if (!editSize) return null;
@@ -17,7 +17,7 @@ export function diffLength(a, b, c, name) {
     editSize + commonCharsAfter < a.length &&
     commonCharsAfter < b.length &&
     a[editSize + commonCharsAfter] === b[commonCharsAfter]
-    ) {
+  ) {
     commonCharsAfter++;
   }
 

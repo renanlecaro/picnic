@@ -1,4 +1,4 @@
-export const defaultText=`Picnic: privacy first collaborative text editor.
+export const defaultText = `Picnic: privacy first collaborative text editor.
 
 This plain text document is editable, go ahead, try it.
 
@@ -10,4 +10,4 @@ You could use it to keep a shared shopping list with your roommates, or to organ
 
 Your changes are encrypted on your device, then we forward the encrypted version to the other people editing. You can check the code (it's short and sweet) on GitHub : https://github.com/renanlecaro/picnic
 
-`
+`;

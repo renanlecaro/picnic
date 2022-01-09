@@ -1,5 +1,5 @@
-import {bufferToS} from "./bufferToS";
-import {sToBuffer} from "./sToBuffer";
+import { bufferToS } from "./bufferToS";
+import { sToBuffer } from "./sToBuffer";
 
 export async function getKey() {
   if (window.location.hash) {

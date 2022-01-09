@@ -1,6 +1,6 @@
-import {crash} from "./crash";
-import {setDecodedText} from "./setDecodedText";
-import {sToBuffer} from "./sToBuffer";
+import { crash } from "./crash";
+import { setDecodedText } from "./setDecodedText";
+import { sToBuffer } from "./sToBuffer";
 
 export async function setText(parsed, key) {
   try {
@@ -14,7 +14,7 @@ export async function setText(parsed, key) {
     );
 
     const decoded = new TextDecoder().decode(decryptedButBinary);
-    setDecodedText(decoded)
+    setDecodedText(decoded, editor);
   } catch (e) {
     crash(e);
   }
