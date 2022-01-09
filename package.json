@@ -5,27 +5,28 @@
   "main": "src/server/server.js",
   "scripts": {
     "start": "npm run dev",
-    "prod": "npm run prod:test && npm run prod:client && npm run prod:server",
-    "dev": "concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server'",
+    "prod": "npm run prod:client && npm run prod:server",
+    "dev": "concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server' 'npm run dev:prepare'",
     "dev:server": "nodemon src/server/server.js",
     "dev:test": "jest --watch -u",
     "dev:client": "rollup src/client/index.js --file build/index.js --format iife  --watch ",
-    "prod:test": "jest",
+    "dev:prepare": "husky install",
     "prod:server": "node src/server/server.js",
     "prod:client": "rollup src/client/index.js --file build/index.js --format iife  ",
-    "e2e:headless": "npx playwright test e2e/",
-    "e2e:headfull": "npx playwright test --headed e2e/",
-    "prepare": "husky install"
+    "ci:server": "node src/server/server.js",
+    "ci:unit-test": "jest",
+    "ci:headless": "npx playwright test e2e/",
+    "ci:headfull": "npx playwright test --headed e2e/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^7.0.0",
-    "jest": "^27.4.7",
     "rollup": "^2.63.0",
     "ws": "^8.4.0"
   },
   "devDependencies": {
+    "concurrently": "^7.0.0",
+    "jest": "^27.4.7",
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
     "@playwright/test": "^1.17.1",
