@@ -65,6 +65,7 @@ p {
   font: inherit;
   /*To accommodate the gradient of the status message*/
   padding: 20px 20px 80px 20px;
+  font-family: monospace;
 }
 
 #editor,
