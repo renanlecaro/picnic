@@ -9,12 +9,15 @@ const clientJS = fs.readFileSync("./build/index.js").toString();
 
 const server = http.createServer(async (req, res) => {
   if (req.url === "/") {
-    res.writeHead(200, { "Content-Type": "text/html" });
+    res.writeHead(200, {
+      "Cache-Control": "no-cache",
+      "Content-Type": "text/html",
+    });
     res.end(
-      fs
-        .readFileSync("./src/client/index.html")
-        .toString()
-        .replace("DOC_ID_WILL_GO_HERE", crypto.randomBytes(8).toString("hex"))
+      homeHTML.replace(
+        "DOC_ID_WILL_GO_HERE",
+        crypto.randomBytes(8).toString("hex")
+      )
     );
     // res.end(homeHTML.replace('DOC_ID_WILL_GO_HERE', crypto.randomBytes(8).toString("hex")));
     return;
@@ -22,7 +25,11 @@ const server = http.createServer(async (req, res) => {
 
   const id = req.url.slice(1);
   const startText = JSON.stringify(await getText(id));
-  res.writeHead(200, { "Content-Type": "text/html" });
+  res.writeHead(200, {
+    "Cache-Control": "no-cache",
+
+    "Content-Type": "text/html",
+  });
   res.end(
     clientHTML.replace(
       "CLIENT_JS_INSERTED_HERE",
@@ -73,7 +80,6 @@ wss.on("connection", function connection(ws) {
           wst.send(JSON.stringify(parsed))
         );
         await setText(parsed.id, parsed);
-
         break;
     }
   });
