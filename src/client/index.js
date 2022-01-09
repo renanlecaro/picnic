@@ -20,12 +20,15 @@ if (editor.value) editor.value = "";
 console.clear();
 let fails = 0;
 let sessionId = Date.now();
+if (window.debugmode) {
+  document.getElementById("debug").style.display = "block";
+}
 
 let version = 0;
 function setVersion(v) {
   if (v <= version) return false;
   version = v;
-  document.getElementById("debug").innerText = v;
+  document.getElementById("debug").innerText = "v" + v;
   return true;
 }
 
