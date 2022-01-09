@@ -3,6 +3,8 @@ const { WebSocketServer } = require("ws");
 const http = require("http");
 const fs = require("fs");
 
+const { debugmode } = process.env;
+
 const homeHTML = fs.readFileSync("./src/client/index.html").toString();
 const clientHTML = fs.readFileSync("./src/client/editor.html").toString();
 const clientJS = fs.readFileSync("./build/index.js").toString();
@@ -33,7 +35,7 @@ const server = http.createServer(async (req, res) => {
     clientHTML.replace(
       "CLIENT_JS_INSERTED_HERE",
       `
-    window.cleartext=${!!process.env.cleartext};
+    window.debugmode=${!!debugmode};
     var startText=${startText};
     ${clientJS} 
     `
@@ -61,13 +63,22 @@ async function setText(id, text) {
 }
 
 const rooms = {};
+const currentVersionNumber = {};
+
+function logRoomState(roomId) {
+  console.log(
+    roomId +
+      " : " +
+      (rooms[roomId] ? rooms[roomId].length + " participant(s)" : "empty")
+  );
+}
 const wss = new WebSocketServer({ server, perMessageDeflate: false });
 wss.on("connection", function connection(ws, req) {
-  const ip = req.headers["x-forwarded-for"]
-    ? req.headers["x-forwarded-for"].split(",")[0].trim()
-    : req.socket.remoteAddress;
-
-  console.log(ip + " connected");
+  // const ip = req.headers["x-forwarded-for"]
+  //   ? req.headers["x-forwarded-for"].split(",")[0].trim()
+  //   : req.socket.remoteAddress;
+  //
+  // console.log(ip + " connected");
   ws.on("message", async function message(data) {
     const parsed = JSON.parse(data);
     switch (parsed.action) {
@@ -78,19 +89,36 @@ wss.on("connection", function connection(ws, req) {
           rooms[parsed.id] = [];
         }
         rooms[parsed.id].push(ws);
+        logRoomState(parsed.id);
         break;
       case "set-text":
         console.log(
-          "set-text " +
-            JSON.stringify(parsed.ciphertext) +
-            " for all " +
-            rooms[parsed.id].length +
-            " participants of room " +
-            parsed.id
+          parsed.id +
+            ": set-text " +
+            (currentVersionNumber[parsed.id] || 0) +
+            ">" +
+            parsed.version +
+            (debugmode ? JSON.stringify(parsed.ciphertext) : "[encrypted]")
         );
-        (rooms[parsed.id] || []).forEach((wst) =>
-          wst.send(JSON.stringify(parsed))
-        );
+        if (
+          currentVersionNumber[parsed.id] &&
+          parsed.version <= currentVersionNumber[parsed.id]
+        ) {
+          const currentV = await getText(parsed.id);
+          ws.send(JSON.stringify(currentV));
+          return console.info("stale update ignored");
+        } else {
+          currentVersionNumber[parsed.id] = parsed.version;
+        }
+        (rooms[parsed.id] || []).forEach((wst) => {
+          if (debugmode) {
+            setTimeout(() => {
+              if (Math.random() < 0.9) wst.send(JSON.stringify(parsed));
+            }, 500 + Math.random() * 5000);
+          } else {
+            wst.send(JSON.stringify(parsed));
+          }
+        });
         await setText(parsed.id, parsed);
         break;
     }
@@ -101,6 +129,8 @@ wss.on("connection", function connection(ws, req) {
     if (roomId) {
       rooms[roomId] = (rooms[roomId] || []).filter((wst) => wst !== ws);
       if (!rooms[roomId].length) delete rooms[roomId];
+
+      logRoomState(roomId);
     }
   });
 });

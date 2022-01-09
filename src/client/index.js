@@ -3,7 +3,11 @@ import { clearErrorMessage, crash } from "./crash";
 import { getKey } from "./getKey";
 import { updateTitle } from "./updateTitle";
 import { setText } from "./setText";
-import { setDecodedText, updateSavingIndicator } from "./setDecodedText";
+import {
+  isSaving,
+  setDecodedText,
+  updateSavingIndicator,
+} from "./setDecodedText";
 import { throttle } from "./debounce";
 import { bufferToS } from "./bufferToS";
 
@@ -15,13 +19,24 @@ export const id = location.pathname.slice(1);
 if (editor.value) editor.value = "";
 console.clear();
 let fails = 0;
+let sessionId = Date.now();
 
+let version = 0;
+function setVersion(v) {
+  if (v <= version) return false;
+  version = v;
+  document.getElementById("debug").innerText = v;
+  return true;
+}
+
+setVersion(startText ? startText.version : 1);
 function connect(key) {
   const socket = new WebSocket(
     (location.protocol === "https:" ? "wss://" : "ws://") + location.host
   );
 
   function send(data) {
+    console.info("sending ", data);
     socket.send(JSON.stringify(data));
   }
 
@@ -54,19 +69,21 @@ function connect(key) {
 
       send({
         action: "set-text",
-        ciphertext: window.cleartext ? decoded : bufferToS(encrypted),
+        ciphertext: window.debugmode ? decoded : bufferToS(encrypted),
         iv: bufferToS(iv),
         id,
+        version: version + 1,
+        sessionId,
       });
 
-      console.log({
-        type: "sent-set-text",
-        decoded,
-      });
+      // console.log({
+      //   type: "sent-set-text",
+      //   decoded,
+      // });
     } catch (e) {
       crash(e);
     }
-  });
+  }, 600);
 
   function onKeyUp() {
     updateSavingIndicator(editor);
@@ -76,10 +93,13 @@ function connect(key) {
   function onMessage(event) {
     try {
       const parsed = JSON.parse(event.data);
+      console.info("recieved", parsed);
       switch (parsed.action) {
         case "set-text":
-          setText(parsed, key);
-          clearErrorMessage();
+          if (setVersion(parsed.version)) {
+            setText(parsed, key, sessionId);
+            clearErrorMessage();
+          }
           break;
       }
     } catch (e) {
@@ -91,6 +111,12 @@ function connect(key) {
     clearErrorMessage();
   }
 
+  function backupAutoSave() {
+    if (isSaving()) {
+      onKeyUp();
+    }
+  }
+  const backupAutoSaveInterval = setInterval(backupAutoSave, 1000);
   socket.addEventListener("open", onOpen);
   socket.addEventListener("close", wipe);
   socket.addEventListener("error", wipe);
@@ -99,16 +125,22 @@ function connect(key) {
   editor.addEventListener("keyup", onKeyUp);
 
   function wipe(err) {
+    clearInterval(backupAutoSaveInterval);
     socket.removeEventListener("open", onOpen);
     socket.removeEventListener("close", wipe);
     socket.removeEventListener("error", wipe);
     socket.removeEventListener("message", onMessage);
     editor.removeEventListener("change", onKeyUp);
     editor.removeEventListener("keyup", onKeyUp);
-    crash("Reconnecting...");
+    crash(
+      "Reconnecting, " +
+        ({ 0: "first", 1: "second", 2: "third" }[fails] || fails + 1 + "th") +
+        " attempt ..."
+    );
+    console.info("Reconnecting...", fails, err);
     setTimeout(
       () => requestAnimationFrame(() => connect(key)),
-      1000 * Math.pow(2, fails)
+      1000 * (Math.pow(2, fails) - 1)
     );
     fails++;
   }

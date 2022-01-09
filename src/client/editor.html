@@ -15,6 +15,7 @@
     ></textarea>
     <div id="saving-indicator">Saving...</div>
     <div id="errorMsg"></div>
+    <div id="debug"></div>
 
     <style>
       html,
@@ -89,6 +90,15 @@
         50% {
           transform: translate(0, 100%);
         }
+      }
+      #debug {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        font-weight: bold;
+        padding: 20px;
+        line-height: 20px;
+        background: white;
       }
     </style>
     <script>
