@@ -23,7 +23,9 @@ export async function getKey() {
 
     const exported = await window.crypto.subtle.exportKey("raw", key);
 
-    window.location.hash = bufferToS(exported);
+    // Modifying the hash directly created an intermediary step in the history stack, not ideal
+    history.replaceState(null, null, "#" + bufferToS(exported));
+
     return key;
   }
 }

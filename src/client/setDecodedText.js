@@ -22,6 +22,7 @@ export function setDecodedText(decoded, editor) {
   updateTitle(editor.value);
   lastSetText = decoded;
   updateSavingIndicator(editor);
+  editor.removeAttribute("disabled");
 }
 
 const savingIndicator = document.getElementById("saving-indicator");
