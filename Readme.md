@@ -20,13 +20,6 @@ up your own instance.
 Pull the source and install with `npm i` then start the
 server on http://localhost:4444/ with `npm start`.
 
-Running `npm run debugmode` :
-
-- removes the encryption to help you investigate errors
-- show the document version number in the bottom left of the ui
-- adds random delays to messages
-- cancels some messages at random
-
 The project is auto-formatted by prettier on commit.
 
 ## host your own

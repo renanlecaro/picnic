@@ -5,9 +5,6 @@ import { sToBuffer } from "./sToBuffer";
 export async function setText(parsed, key, sessionId) {
   try {
     const byMe = sessionId === parsed.sessionId;
-    if (window.debugmode) {
-      return setDecodedText(parsed.ciphertext, editor, byMe);
-    }
 
     const decryptedButBinary = await window.crypto.subtle.decrypt(
       {

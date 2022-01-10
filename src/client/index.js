@@ -68,7 +68,7 @@ function connect(key) {
 
       send({
         action: "set-text",
-        ciphertext: window.debugmode ? decoded : bufferToS(encrypted),
+        ciphertext: bufferToS(encrypted),
         iv: bufferToS(iv),
         id,
         version: version + 1,

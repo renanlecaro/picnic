@@ -1,9 +1,4 @@
-export const defaultText = window.debugmode
-  ? `
-Debug mode on, the content
-of the files is not encrypted at all.
-`
-  : `This plain text document is ✏️ editable, go ahead, try it.
+export const defaultText = `This plain text document is ✏️ editable, go ahead, try it.
 
 It's been generated just for you, and the only way to read/write is to access the exact url you are on.
 

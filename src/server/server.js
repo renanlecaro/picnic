@@ -5,8 +5,6 @@ const { WebSocketServer } = require("ws");
 const http = require("http");
 const fs = require("fs");
 
-const { debugmode } = process.env;
-
 const homeHTML = fs.readFileSync("./src/client/index.html").toString();
 const clientHTML = fs.readFileSync("./src/client/editor.html").toString();
 const clientJS = fs.readFileSync("./build/index.js").toString();
@@ -44,8 +42,7 @@ const server = http.createServer(async (req, res) => {
     clientHTML
       .replace(
         "CLIENT_JS_INSERTED_HERE",
-        `
-    window.debugmode=${!!debugmode};
+        ` 
     var startText=${startText};
     ${clientJS} 
     `
@@ -110,14 +107,6 @@ wss.on("connection", function connection(ws, req) {
         logRoomState(parsed.id);
         break;
       case "set-text":
-        console.log(
-          parsed.id +
-            ": set-text " +
-            (currentVersionNumber[parsed.id] || 0) +
-            ">" +
-            parsed.version +
-            (debugmode ? JSON.stringify(parsed.ciphertext) : "[encrypted]")
-        );
         if (
           currentVersionNumber[parsed.id] &&
           parsed.version <= currentVersionNumber[parsed.id]
@@ -129,13 +118,7 @@ wss.on("connection", function connection(ws, req) {
           currentVersionNumber[parsed.id] = parsed.version;
         }
         (rooms[parsed.id] || []).forEach((wst) => {
-          if (debugmode) {
-            setTimeout(() => {
-              if (Math.random() < 0.9) wst.send(JSON.stringify(parsed));
-            }, 500 + Math.random() * 5000);
-          } else {
-            wst.send(JSON.stringify(parsed));
-          }
+          wst.send(JSON.stringify(parsed));
         });
         await setText(parsed.id, parsed);
         break;
