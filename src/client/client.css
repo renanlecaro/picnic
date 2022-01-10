@@ -28,6 +28,13 @@ form > div {
   align-items: center;
 }
 
+a {
+  font-weight: bold;
+  color: inherit;
+}
+a:not(:hover) {
+  text-decoration: none;
+}
 h1 {
   font-size: 30px;
   margin: 0;
@@ -35,7 +42,6 @@ h1 {
 }
 
 button {
-  float: right;
   display: flex;
   background: limegreen;
   box-shadow: 0 5px 0 #2bb02b;
@@ -61,8 +67,15 @@ button:active {
   box-shadow: 0 0 0 #2bb02b;
   background: #2fc62f;
 }
-p {
-  clear: both;
+footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0.5;
+  line-height: 20px;
+  padding: 20px;
 }
 
 /* EDITOR */
