@@ -44,7 +44,7 @@ h1 {
 button {
   display: flex;
   background: limegreen;
-  box-shadow: 0 5px 0 #2bb02b;
+  box-shadow: 0 3px 0 #2bb02b;
   border: none;
   padding: 15px 20px;
   border-radius: 5px;
@@ -63,7 +63,7 @@ button:focus {
 }
 
 button:active {
-  transform: translate(0, 5px);
+  transform: translate(0, 3px);
   box-shadow: 0 0 0 #2bb02b;
   background: #2fc62f;
 }
