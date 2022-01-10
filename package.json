@@ -1,21 +1,20 @@
 {
   "name": "picnic",
   "version": "1.0.0",
-  "description": "",
+  "description": "And end to end encrypted notepad web app.",
   "main": "src/server/server.js",
   "scripts": {
-    "start": "npm run dev",
-    "prod": "npm run prod:client && npm run prod:server",
-    "dev": "npm run dev:prepare && concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server'",
+    "start": "npm run dev:prepare && concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server",
     "dev:server": "nodemon src/server/server.js",
     "dev:test": "jest --watch -u",
     "dev:client": "rollup src/client/index.js --name picnic --file build/index.js --format iife  --watch ",
     "dev:prepare": "husky install",
+    "prod": "npm run prod:client && npm run prod:server",
     "prod:server": "node src/server/server.js",
     "prod:client": "rollup src/client/index.js --name picnic --file build/index.js --format iife  "
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Renan LE CARO",
+  "license": "MIT",
   "dependencies": {
     "rollup": "^2.63.0",
     "ws": "^8.4.0",
