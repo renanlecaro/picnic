@@ -4,8 +4,8 @@
   "description": "And end to end encrypted notepad web app.",
   "main": "src/server/server.js",
   "scripts": {
-    "start": "npm run dev:prepare && concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server",
-    "dev:server": "nodemon src/server/server.js",
+    "start": "npm run dev:prepare && concurrently --kill-others 'npm run dev:client' 'npm run dev:test' 'npm run dev:server'",
+    "dev:server": "nodemon  -e js,css,html,json src/server/server.js",
     "dev:test": "jest --watch -u",
     "dev:client": "rollup src/client/index.js --name picnic --file build/index.js --format iife  --watch ",
     "dev:prepare": "husky install",

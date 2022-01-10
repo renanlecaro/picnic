@@ -1,4 +1,3 @@
-import { defaultText } from "./defaultText";
 import { clearErrorMessage, crash } from "./crash";
 import { getKey } from "./getKey";
 import { updateTitle } from "./updateTitle";
@@ -38,11 +37,14 @@ function connect(key) {
   }
   if (firstConnection) {
     firstConnection = false;
+
     if (startText) {
       setText(startText, key);
     } else {
-      // new doc
-      setDecodedText(defaultText, editor);
+      // enable the textarea
+      clearErrorMessage();
+      setDecodedText("", editor);
+      editor.focus();
     }
   }
   let lastEditorVal = editor.value;

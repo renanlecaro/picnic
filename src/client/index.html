@@ -8,44 +8,16 @@
   <body>
     <noscript>JS needs to run for this to work</noscript>
     <form action="/DOC_ID_WILL_GO_HERE" method="get">
-      <h1>Collaborative text editor</h1>
-      <button type="submit">new document</button>
-
-      <p>
-        Picnic is a very generic app that tries to solve one specific problem :
-        You are organizing a picnic with friends and need to decide who brings
-        what.
-      </p>
-      <p>
-        You could spam the WhatsApp group with messages like "I'll bring
-        sandwiches" and "I'll bring drinks", but it quickly gets messy and
-        difficult to know who brings what and what is missing.
-      </p>
-      <p>
-        With picnic, you just create a document, post the link in the group
-        chat, and then edit it together.
-      </p>
-      <p>
-        The hosted version of this software is provided without any guarantee,
-        if you don't want your texts to disappear one day, I'd recommend setting
-        up your own instance.
-      </p>
-      <p>
-        All the text you write is encrypted before saving it, using the URL as a
-        key. The encrypted text is sent to our servers, where it is saved and
-        also forwarded to the other people editing your text. Each client then
-        decodes the text using the key it knows from the URL. This means nobody
-        else can read your documents, not even the platform that hosts them.
-      </p>
-      <p>
-        However, the only way to be sure is to control the platform where the
-        app is hosted, that's why self-hosting this app is the best way to use
-        it.
-      </p>
-      <p>
-        Picnic is open source, check it out on
-        <a href="https://github.com/renanlecaro/picnic">GitHub</a>
-      </p>
+      <div>
+        <h1>Collaborative text editor</h1>
+        <p>
+          Create a document, share the link and edit it with your friends. It's
+          free, mobile friendly, tracking free,
+          <a href="https://github.com/renanlecaro/picnic">open source</a> and
+          end-to-end encrypted. Host your own instance for additional security.
+        </p>
+        <button type="submit">new document</button>
+      </div>
     </form>
     <style>
       CLIENT_CSS_INSERTED_HERE
