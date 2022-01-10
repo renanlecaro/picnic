@@ -3,7 +3,7 @@ import { sToBuffer } from "./sToBuffer";
 
 export async function getKey() {
   if (window.location.hash) {
-    const key = await crypto.subtle.importKey(
+    const key = await window.crypto.subtle.importKey(
       "raw",
       sToBuffer(window.location.hash.slice(1)),
       "AES-GCM",

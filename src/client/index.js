@@ -49,7 +49,7 @@ function connect(key) {
   const debouncedKeyUp = throttle(async () => {
     try {
       const decoded = editor.value;
-      if (decoded == lastEditorVal) {
+      if (decoded === lastEditorVal) {
         return console.debug("No change, event ignored");
       }
       lastEditorVal = decoded;
