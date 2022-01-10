@@ -1,3 +1,5 @@
+const { shouldRateLimit } = require("./ratelimit");
+
 const crypto = require("crypto");
 const { WebSocketServer } = require("ws");
 const http = require("http");
@@ -11,6 +13,14 @@ const clientJS = fs.readFileSync("./build/index.js").toString();
 const clientCSS = fs.readFileSync("./src/client/client.css").toString();
 
 const server = http.createServer(async (req, res) => {
+  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const id = req.url.slice(1);
+  if (shouldRateLimit(ip, id)) {
+    res.writeHead(429);
+    res.end("Too many request");
+    return;
+  }
+
   if (req.url === "/") {
     res.writeHead(200, {
       "Cache-Control": "no-cache",
@@ -25,7 +35,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const id = req.url.slice(1);
   const startText = JSON.stringify(await getText(id));
   res.writeHead(200, {
     "Cache-Control": "no-cache",
@@ -74,15 +83,22 @@ function logRoomState(roomId) {
       (rooms[roomId] ? rooms[roomId].length + " participant(s)" : "empty")
   );
 }
-const wss = new WebSocketServer({ server, perMessageDeflate: false });
+const wss = new WebSocketServer({ noServer: true, perMessageDeflate: false });
 wss.on("connection", function connection(ws, req) {
-  // const ip = req.headers["x-forwarded-for"]
-  //   ? req.headers["x-forwarded-for"].split(",")[0].trim()
-  //   : req.socket.remoteAddress;
-  //
-  // console.log(ip + " connected");
+  const ip = req.headers["x-forwarded-for"]
+    ? req.headers["x-forwarded-for"].split(",")[0].trim()
+    : req.socket.remoteAddress;
+
+  if (shouldRateLimit(ip, null)) {
+    return ws.close();
+  }
+
   ws.on("message", async function message(data) {
     const parsed = JSON.parse(data);
+
+    if (shouldRateLimit(ip, parsed.roomId)) {
+      return ws.close();
+    }
     switch (parsed.action) {
       case "join-room":
         if (ws.roomId) throw Error("One socket cannot join multiple rooms");
@@ -134,6 +150,28 @@ wss.on("connection", function connection(ws, req) {
 
       logRoomState(roomId);
     }
+  });
+});
+
+server.on("upgrade", function upgrade(request, socket, head) {
+  const ip = request.headers["x-forwarded-for"]
+    ? request.headers["x-forwarded-for"].split(",")[0].trim()
+    : socket.remoteAddress;
+
+  if (shouldRateLimit(ip, null)) {
+    socket.write("HTTP/1.1 429 Too many request\r\n\r\n");
+    socket.destroy();
+    console.log(ip + " blocked at upgrade time");
+    return;
+  }
+
+  // if (err || !client) {
+
+  //   return;
+  // }
+
+  wss.handleUpgrade(request, socket, head, function done(ws) {
+    wss.emit("connection", ws, request);
   });
 });
 
