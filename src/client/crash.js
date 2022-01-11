@@ -7,7 +7,8 @@ export function crash(e) {
   editor.setAttribute("disabled", true);
   updateInfoToast(
     "error",
-    (typeof e === "string" && e) || (e && e.message) || "Unknown error"
+    "😞 " +
+      ((typeof e === "string" && e) || (e && e.message) || "Unknown error")
   );
 }
 

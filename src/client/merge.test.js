@@ -103,7 +103,7 @@ describe("merge", () => {
     const local1 = "Shopping list : \nTomatoes\nRad";
 
     const firstMerge = merge(old, remote1, local1);
-    // remote changes are recieved, then local user finishes his word
+    // remote changes are received, then local user finishes his word
     const secondMerge = merge(remote1, remote2, firstMerge + "ishes");
 
     expect(firstMerge).toEqual(`Shopping list : 

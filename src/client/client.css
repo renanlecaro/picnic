@@ -35,11 +35,6 @@ a {
 a:not(:hover) {
   text-decoration: none;
 }
-h1 {
-  font-size: 30px;
-  margin: 0;
-  opacity: 0.7;
-}
 
 button {
   display: flex;

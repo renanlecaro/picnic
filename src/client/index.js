@@ -76,18 +76,13 @@ function connect(key) {
         version: version + 1,
         sessionId,
       });
-
-      // console.log({
-      //   type: "sent-set-text",
-      //   decoded,
-      // });
     } catch (e) {
       crash(e);
     }
   }, 600);
 
   function onKeyUp() {
-    if (isSaving()) updateInfoToast("info", "Saving...");
+    if (isSaving()) updateInfoToast("info", "💾 Saving...");
     debouncedKeyUp();
   }
 
@@ -110,7 +105,7 @@ function connect(key) {
   function onOpen() {
     send({ action: "join-room", id });
     clearErrorMessage();
-    updateInfoToast("info", "Connected");
+    updateInfoToast("info", "✅ Connected");
   }
 
   function backupAutoSave() {
