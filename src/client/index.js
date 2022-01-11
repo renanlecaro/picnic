@@ -55,7 +55,7 @@ function connect(key) {
       lastEditorVal = decoded;
       updateTitle(decoded);
 
-      const iv = await window.crypto.getRandomValues(new Uint8Array(128));
+      const iv = await window.crypto.getRandomValues(new Uint8Array(96));
 
       const encrypted = await window.crypto.subtle.encrypt(
         {
