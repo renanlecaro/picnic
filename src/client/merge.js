@@ -1,17 +1,5 @@
 import { diffLength } from "./diffLength";
 
-let trace = false;
-
-export function withTrace(cb) {
-  const start = Date.now();
-  console.log("withTrace starting");
-  trace = true;
-  const result = cb();
-  trace = false;
-  console.log("withTrace took " + (Date.now() - start) + " ms");
-  return result;
-}
-
 export function merge(old, remote, local, selections = []) {
   const shift = (cb) =>
     selections.forEach((val, index) => (selections[index] = cb(val)));
@@ -32,7 +20,7 @@ export function merge(old, remote, local, selections = []) {
 
     if (noCh) {
       offsetL += noCh;
-      if (trace) console.debug("no change : " + remote.slice(0, noCh));
+
       result += remote.slice(0, noCh);
       old = old.slice(noCh);
       remote = remote.slice(noCh);
@@ -50,7 +38,6 @@ export function merge(old, remote, local, selections = []) {
       bothCh++;
 
     if (bothCh) {
-      if (trace) console.debug("both changed : " + remote.slice(0, bothCh));
       result += remote.slice(0, bothCh);
       remote = remote.slice(bothCh);
       local = local.slice(bothCh);
@@ -73,7 +60,6 @@ export function merge(old, remote, local, selections = []) {
     if (!best) break;
 
     if (best.name === "rmR") {
-      if (trace) console.debug("Remote deleted : " + old.slice(best.editSize));
       // a word was removed by another user
       remove(offsetL, offsetL + best.editSize);
       offsetL += best.editSize;
@@ -83,7 +69,6 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "rmL") {
-      if (trace) console.debug("Local deleted : " + old.slice(best.editSize));
       // a word was removed by the current user but not committed yet
       old = old.slice(best.editSize);
       remote = remote.slice(best.editSize);
@@ -91,8 +76,6 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "addR") {
-      if (trace)
-        console.debug("Remote added : " + remote.slice(0, best.editSize));
       // a word was added by a remote user
       add(offsetL, best.editSize);
       result += remote.slice(0, best.editSize);
@@ -101,8 +84,6 @@ export function merge(old, remote, local, selections = []) {
     }
 
     if (best.name === "addL") {
-      if (trace)
-        console.debug("Local added : " + local.slice(0, best.editSize));
       // a word was added by the local user but not committed yet
       offsetL += best.editSize;
       result += local.slice(0, best.editSize);

@@ -1,4 +1,4 @@
-import { merge, withTrace } from "./merge";
+import { merge } from "./merge";
 
 function exchange(startText = "", cb) {
   let texts = [startText, startText];
@@ -156,12 +156,11 @@ describe("simulated_exchanges", () => {
         const cbB = send(1);
         type(1, " dogs");
         type(0, "lly ");
-        withTrace(() => {
-          cbA();
-        });
-        withTrace(() => {
-          cbB();
-        });
+
+        cbA();
+
+        cbB();
+
         send(0)();
         send(1)();
       })

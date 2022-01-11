@@ -13,7 +13,6 @@ export const id = location.pathname.slice(1);
 // ensure that the value of the textarea is not kept upon reloads.
 // Maybe not required
 if (editor.value) editor.value = "";
-console.clear();
 let fails = 0;
 let sessionId = Date.now();
 let firstConnection = true;
@@ -32,7 +31,6 @@ function connect(key) {
   );
 
   function send(data) {
-    console.info("sending ", data);
     socket.send(JSON.stringify(data));
   }
   if (firstConnection) {
@@ -52,7 +50,7 @@ function connect(key) {
     try {
       const decoded = editor.value;
       if (decoded === lastEditorVal) {
-        return console.debug("No change, event ignored");
+        return;
       }
       lastEditorVal = decoded;
       updateTitle(decoded);
@@ -89,7 +87,7 @@ function connect(key) {
   function onMessage(event) {
     try {
       const parsed = JSON.parse(event.data);
-      console.info("recieved", parsed);
+
       switch (parsed.action) {
         case "set-text":
           if (setVersion(parsed.version)) {
@@ -134,7 +132,6 @@ function connect(key) {
 
     setTimeout(() => requestAnimationFrame(() => connect(key)), delay);
     fails++;
-    console.error({ err, fails, delay });
   }
 }
 

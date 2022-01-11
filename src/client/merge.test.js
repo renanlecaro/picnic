@@ -1,4 +1,4 @@
-import { merge, withTrace } from "./merge";
+import { merge } from "./merge";
 
 describe("merge", () => {
   //merge(old, remote, local, selections = [], offsetL = 0)

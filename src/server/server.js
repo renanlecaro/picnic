@@ -73,13 +73,6 @@ async function setText(id, text) {
 const rooms = {};
 const currentVersionNumber = {};
 
-function logRoomState(roomId) {
-  console.log(
-    roomId +
-      " : " +
-      (rooms[roomId] ? rooms[roomId].length + " participant(s)" : "empty")
-  );
-}
 const wss = new WebSocketServer({ noServer: true, perMessageDeflate: false });
 wss.on("connection", function connection(ws, req) {
   const ip = req.headers["x-forwarded-for"]
@@ -104,7 +97,6 @@ wss.on("connection", function connection(ws, req) {
           rooms[parsed.id] = [];
         }
         rooms[parsed.id].push(ws);
-        logRoomState(parsed.id);
         break;
       case "set-text":
         if (
@@ -113,7 +105,7 @@ wss.on("connection", function connection(ws, req) {
         ) {
           const currentV = await getText(parsed.id);
           ws.send(JSON.stringify(currentV));
-          return console.info("stale update ignored");
+          return;
         } else {
           currentVersionNumber[parsed.id] = parsed.version;
         }
@@ -130,8 +122,6 @@ wss.on("connection", function connection(ws, req) {
     if (roomId) {
       rooms[roomId] = (rooms[roomId] || []).filter((wst) => wst !== ws);
       if (!rooms[roomId].length) delete rooms[roomId];
-
-      logRoomState(roomId);
     }
   });
 });
@@ -144,7 +134,6 @@ server.on("upgrade", function upgrade(request, socket, head) {
   if (shouldRateLimit(ip, null)) {
     socket.write("HTTP/1.1 429 Too many request\r\n\r\n");
     socket.destroy();
-    console.log(ip + " blocked at upgrade time");
     return;
   }
 
