@@ -81,7 +81,7 @@ footer {
   resize: none;
   font: inherit;
   /*To accommodate the gradient of the status message*/
-  padding: 20px 20px 80px 20px;
+  padding: 40px 20px;
   font-family: monospace;
 }
 
@@ -95,7 +95,7 @@ footer {
 
 @media (min-width: 800px) {
   #editor {
-    padding: 20px calc((100vw - 800px) / 2);
+    padding: 40px calc((100vw - 800px) / 2);
   }
 }
 
@@ -106,17 +106,35 @@ footer {
 #info {
   position: fixed;
   max-width: 100%;
-  pointer-events: none;
   line-height: 20px;
   padding: 10px 20px;
   color: #333;
   background: rgba(255, 255, 255, 0.8);
   display: none;
-  bottom: 0;
-  right: 0;
 }
 #info.show {
   display: block;
+}
+
+#info[data-mode="0"] {
+  bottom: 0;
+  right: 0;
+  cursor: w-resize;
+}
+#info[data-mode="1"] {
+  bottom: 0;
+  left: 0;
+  cursor: n-resize;
+}
+#info[data-mode="2"] {
+  top: 0;
+  left: 0;
+  cursor: e-resize;
+}
+#info[data-mode="3"] {
+  top: 0;
+  right: 0;
+  cursor: s-resize;
 }
 
 @media (prefers-color-scheme: dark) {
