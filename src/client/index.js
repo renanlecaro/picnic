@@ -82,7 +82,7 @@ function connect(key) {
   }, 600);
 
   function onKeyUp() {
-    if (isSaving()) updateInfoToast("info", "💾 Saving...");
+    if (isSaving()) updateInfoToast("💾 Saving...");
     debouncedKeyUp();
   }
 
@@ -105,7 +105,7 @@ function connect(key) {
   function onOpen() {
     send({ action: "join-room", id });
     clearErrorMessage();
-    updateInfoToast("info", "✅ Connected");
+    updateInfoToast("✅ Connected");
   }
 
   function backupAutoSave() {

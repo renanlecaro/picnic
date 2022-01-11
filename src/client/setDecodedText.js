@@ -7,7 +7,7 @@ let lastSetText = "";
 export function setDecodedText(decoded, editor, madeByMe) {
   if (madeByMe) {
     console.info("setDecodedText ignored, madeByMe");
-    updateInfoToast("success", "✅ Saved");
+    updateInfoToast("✅ Saved");
   } else {
     console.info("setDecodedText applied");
     const sel = [editor.selectionStart, editor.selectionEnd];
@@ -30,7 +30,7 @@ export function setDecodedText(decoded, editor, madeByMe) {
     editor.selectionStart = sel[0];
     editor.selectionEnd = sel[1];
     updateTitle(editor.value);
-    updateInfoToast("info", "👌 Up to date");
+    updateInfoToast("👌 Up to date");
   }
 
   lastSetText = decoded;

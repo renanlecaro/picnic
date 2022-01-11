@@ -1,5 +1,5 @@
 const info = document.getElementById("info");
-export function updateInfoToast(className, text) {
-  info.className = className;
+export function updateInfoToast(text) {
+  info.className = text ? "show" : "";
   info.innerText = text;
 }
