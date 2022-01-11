@@ -21,7 +21,7 @@ form {
   min-height: 100vh;
 }
 form > div {
-  max-width: 504px;
+  max-width: 448px;
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -111,29 +111,35 @@ footer {
   color: #333;
   background: rgba(255, 255, 255, 0.8);
   display: none;
+  transition: all 0.3s;
+  white-space: nowrap;
 }
 #info.show {
   display: block;
 }
 
 #info[data-mode="0"] {
-  bottom: 0;
-  right: 0;
+  left: 100%;
+  top: 100%;
+  transform: translate(-100%, -100%);
   cursor: w-resize;
 }
 #info[data-mode="1"] {
-  bottom: 0;
   left: 0;
+  top: 100%;
+  transform: translate(0, -100%);
   cursor: n-resize;
 }
 #info[data-mode="2"] {
-  top: 0;
   left: 0;
+  top: 0;
+  transform: translate(0, 0);
   cursor: e-resize;
 }
 #info[data-mode="3"] {
+  left: 100%;
   top: 0;
-  right: 0;
+  transform: translate(-100%, 0);
   cursor: s-resize;
 }
 
