@@ -87,7 +87,7 @@ random `iv` buffer
 ```js
 // src/client/index.js
 
-const iv = await window.crypto.getRandomValues(new Uint8Array(12));
+const iv = await window.crypto.getRandomValues(new Uint8Array(128));
 
 const encrypted = await window.crypto.subtle.encrypt(
   {
