@@ -8,7 +8,7 @@ You could spam the WhatsApp group with messages like "I'll bring
 sandwiches" and "I'll bring drinks", but it quickly gets messy and
 difficult to know who brings what and what is missing.
 
-With picnic, you just [create a document](https://picnic.lecaro.me/),
+With picnic, you just create a document,
 post the link in the group chat, and then edit it together.
 
 The hosted version of this software is provided without any guarantee,
