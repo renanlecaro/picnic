@@ -6,6 +6,7 @@ import { isSaving, setDecodedText } from "./setDecodedText";
 import { throttle } from "./debounce";
 import { bufferToS } from "./bufferToS";
 import { updateInfoToast } from "./updateInfoToast";
+import { encrypt, generateCounter } from "./crypto";
 
 export const editor = document.getElementById("editor");
 export const id = location.pathname.slice(1);
@@ -55,21 +56,14 @@ function connect(key) {
       lastEditorVal = decoded;
       updateTitle(decoded);
 
-      const iv = await window.crypto.getRandomValues(new Uint8Array(96));
-
-      const encrypted = await window.crypto.subtle.encrypt(
-        {
-          name: "AES-GCM",
-          iv: iv,
-        },
-        key,
-        new TextEncoder().encode(decoded)
-      );
+      const encoded = new TextEncoder().encode(decoded);
+      const counter = await generateCounter();
+      const encrypted = await encrypt({ counter, key, encoded });
 
       send({
         action: "set-text",
         ciphertext: bufferToS(encrypted),
-        iv: bufferToS(iv),
+        counter: bufferToS(counter),
         id,
         version: version + 1,
         sessionId,

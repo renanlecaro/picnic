@@ -1,31 +1,17 @@
 import { bufferToS } from "./bufferToS";
 import { sToBuffer } from "./sToBuffer";
+import { generateRandomKey, generateSpecificKey } from "./crypto";
 
 export async function getKey() {
   if (window.location.hash) {
-    const key = await window.crypto.subtle.importKey(
-      "raw",
-      sToBuffer(window.location.hash.slice(1)),
-      "AES-GCM",
-      true,
-      ["encrypt", "decrypt"]
-    );
-    return key;
+    return generateSpecificKey({
+      buffer: sToBuffer(window.location.hash.slice(1)),
+    });
   } else {
-    const key = await crypto.subtle.generateKey(
-      {
-        name: "AES-GCM",
-        length: 256,
-      },
-      true,
-      ["encrypt", "decrypt"]
-    );
-
+    const key = await generateRandomKey();
     const exported = await window.crypto.subtle.exportKey("raw", key);
-
     // Modifying the hash directly created an intermediary step in the history stack, not ideal
     history.replaceState(null, null, "#" + bufferToS(exported));
-
     return key;
   }
 }

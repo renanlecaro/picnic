@@ -1,19 +1,17 @@
 import { crash } from "./crash";
 import { setDecodedText } from "./setDecodedText";
 import { sToBuffer } from "./sToBuffer";
+import { decrypt } from "./crypto";
 
 export async function setText(parsed, key, sessionId) {
   try {
     const byMe = sessionId === parsed.sessionId;
 
-    const decryptedButBinary = await window.crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: sToBuffer(parsed.iv),
-      },
+    const decryptedButBinary = await decrypt({
+      counter: sToBuffer(parsed.counter),
       key,
-      sToBuffer(parsed.ciphertext)
-    );
+      encrypted: sToBuffer(parsed.ciphertext),
+    });
 
     const decoded = new TextDecoder().decode(decryptedButBinary);
 
