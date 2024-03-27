@@ -28,7 +28,7 @@ function setVersion(v) {
 setVersion(startText ? startText.version : 1);
 function connect(key) {
   const socket = new WebSocket(
-    (location.protocol === "https:" ? "wss://" : "ws://") + location.host
+    (location.protocol === "https:" ? "wss://" : "ws://") + location.host,
   );
 
   function send(data) {

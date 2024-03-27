@@ -10,7 +10,7 @@ export async function encrypt({ counter, key, encoded }) {
       length: 64,
     },
     key,
-    encoded
+    encoded,
   );
 }
 export async function decrypt({ counter, key, encrypted }) {
@@ -21,7 +21,7 @@ export async function decrypt({ counter, key, encrypted }) {
       length: 64,
     },
     key,
-    encrypted
+    encrypted,
   );
 }
 
@@ -32,7 +32,7 @@ export async function generateRandomKey() {
       length: 256,
     },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   );
 }
 

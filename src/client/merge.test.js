@@ -8,7 +8,7 @@ describe("merge", () => {
   const old = "i like big cars";
   test("add/null", () => {
     expect(merge(old, "i REALLY like big cars", old)).toEqual(
-      "i REALLY like big cars"
+      "i REALLY like big cars",
     );
   });
   test("edi/null", () => {
@@ -20,7 +20,7 @@ describe("merge", () => {
 
   test("null/add", () => {
     expect(merge(old, old, "i REALLY like big cars")).toEqual(
-      "i REALLY like big cars"
+      "i REALLY like big cars",
     );
   });
   test("null/edi", () => {
@@ -32,28 +32,28 @@ describe("merge", () => {
 
   test("add/add", () => {
     expect(
-      merge(old, "i REALLY like big cars", "i like big cars AND TRUCKS")
+      merge(old, "i REALLY like big cars", "i like big cars AND TRUCKS"),
     ).toEqual("i REALLY like big cars AND TRUCKS");
   });
   test("add/edi", () => {
     expect(merge(old, "i REALLY like big cars", "i like big TRUCKS")).toEqual(
-      "i REALLY like big TRUCKS"
+      "i REALLY like big TRUCKS",
     );
   });
   test("add/del", () => {
     expect(merge(old, "i REALLY like big cars", "i like cars")).toEqual(
-      "i REALLY like cars"
+      "i REALLY like cars",
     );
   });
 
   test("edi/add", () => {
     expect(merge(old, "i LOVE big cars", "i like big cars AND TRUCKS")).toEqual(
-      "i LOVE big cars AND TRUCKS"
+      "i LOVE big cars AND TRUCKS",
     );
   });
   test("edi/edi", () => {
     expect(merge(old, "i LOVE big cars", "i like big TRUCKS")).toEqual(
-      "i LOVE big TRUCKS"
+      "i LOVE big TRUCKS",
     );
   });
   test("edi/del", () => {
@@ -62,12 +62,12 @@ describe("merge", () => {
 
   test("del/add", () => {
     expect(merge(old, "i like cars", "i like big cars AND TRUCKS")).toEqual(
-      "i like cars AND TRUCKS"
+      "i like cars AND TRUCKS",
     );
   });
   test("del/edi", () => {
     expect(merge(old, "i like cars", "i like big TRUCKS")).toEqual(
-      "i like TRUCKS"
+      "i like TRUCKS",
     );
   });
   test("del/del", () => {
@@ -91,7 +91,7 @@ describe("merge", () => {
   });
   test("both removed with potential for double remove", () => {
     expect(merge("hello world world", "hello world", "hello world")).toEqual(
-      "hello world"
+      "hello world",
     );
   });
 
@@ -114,7 +114,7 @@ Rad`);
       `Shopping list : 
 Potatoes
 Tomatoes
-Radishes`
+Radishes`,
     );
   });
 });

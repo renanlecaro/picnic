@@ -10,8 +10,8 @@ function exchange(startText = "", cb) {
     history.push(
       texts.map(
         (text, player) =>
-          text.slice(0, cursors[player]) + "|" + text.slice(cursors[player])
-      )
+          text.slice(0, cursors[player]) + "|" + text.slice(cursors[player]),
+      ),
     );
   }
 
@@ -54,13 +54,13 @@ function exchange(startText = "", cb) {
   cb({ setCursor, after, type, send });
 
   const longestText = Math.max(
-    ...history.map((players) => Math.max(...players.map((t) => t.length)))
+    ...history.map((players) => Math.max(...players.map((t) => t.length))),
   );
   return (
     "\n" +
     history
       .map((players, step) =>
-        players.map((p) => p.padEnd(longestText, " ")).join(" ")
+        players.map((p) => p.padEnd(longestText, " ")).join(" "),
       )
       .join("\n") +
     "\n"
@@ -82,7 +82,7 @@ describe("simulated_exchanges", () => {
         setCursor(0, 2);
         type(0, "really ");
         send(0)();
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "
       |i like cats        |i like cats       
@@ -103,7 +103,7 @@ describe("simulated_exchanges", () => {
         type(1, " and");
         type(1, " dogs");
         send(1)();
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "
       |i like cats                 |i like cats                
@@ -129,7 +129,7 @@ describe("simulated_exchanges", () => {
         send(0)();
         type(1, " dogs");
         send(1)();
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "
       |i like cats                 |i like cats                
@@ -163,7 +163,7 @@ describe("simulated_exchanges", () => {
 
         send(0)();
         send(1)();
-      })
+      }),
     ).toMatchInlineSnapshot(`
       "
       |i like cats             |i like cats            

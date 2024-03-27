@@ -27,7 +27,7 @@ const server = http.createServer(async (req, res) => {
     res.end(
       homeHTML
         .replace("DOC_ID_WILL_GO_HERE", crypto.randomBytes(8).toString("hex"))
-        .replace("CLIENT_CSS_INSERTED_HERE", clientCSS)
+        .replace("CLIENT_CSS_INSERTED_HERE", clientCSS),
     );
     // res.end(homeHTML.replace('DOC_ID_WILL_GO_HERE', crypto.randomBytes(8).toString("hex")));
     return;
@@ -45,9 +45,9 @@ const server = http.createServer(async (req, res) => {
         ` 
     var startText=${startText};
     ${clientJS} 
-    `
+    `,
       )
-      .replace("CLIENT_CSS_INSERTED_HERE", clientCSS)
+      .replace("CLIENT_CSS_INSERTED_HERE", clientCSS),
   );
 });
 
